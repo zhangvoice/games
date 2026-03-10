@@ -28,4 +28,3 @@
 
 ### 在线体验
 👉 [http://game.7and5.cn/play/jungle.html](http://game.7and5.cn/play/jungle.html)  
-（请替换为实际地址）
