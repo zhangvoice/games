@@ -1,0 +1,265 @@
+
+/* 全局背景 - 沉稳灰 */
+body {
+    background: #f0f2f5;
+    min-height: 100vh;
+}
+
+/* 棋盘翻转支持 */
+.board-flipped {
+    transform: rotate(180deg);
+}
+.board-flipped .cell {
+    transform: rotate(180deg);
+}
+
+/* 棋盘容器 - 实体游戏风格 (深墨绿/复古绿) */
+.game-container {
+    background-color: #2E4035; /* 深军绿/墨绿 */
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0V0zm20 20h20v20H20V20zM0 20h20v20H0V20zM20 0h20v20H20V0z' fill='%23364b3e' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 
+        0 20px 30px -10px rgba(0, 0, 0, 0.7), 
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 0 8px #1a2620; /* 外框 */
+    border: 2px solid #1a2620;
+    position: relative;
+    max-width: 100%;
+    aspect-ratio: 7/9;
+}
+
+/* 棋盘格子基础样式 - 柔和的纸质/布面绿 */
+.cell {
+    width: 45px;
+    height: 45px;
+    background-color: #E8F5E9; /* 极淡的绿，接近纸张色 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    transition: all 0.2s;
+    border: 1px solid #A5D6A7; /* 柔和的绿色边框 */
+    box-shadow: inset 1px 1px 2px rgba(255,255,255,0.5);
+    border-radius: 0; /* 实体风格通常是直角 */
+}
+
+/* 响应式调整 */
+@media (min-width: 768px) {
+    .cell {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+/* 地形样式 - 河流 (青绿/水鸭色) */
+@keyframes water-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.cell.river {
+    background: linear-gradient(45deg, #81C784, #4DB6AC, #81C784); /* 偏绿的蓝 */
+    background-size: 200% 200%;
+    animation: water-flow 8s ease infinite;
+    border: none;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+}
+.cell.river::after {
+    content: '≈';
+    position: absolute;
+    color: #E0F2F1;
+    font-size: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* 地形样式 - 陷阱 (枯草色/橄榄绿) */
+.cell.trap {
+    background-color: #DCEDC8; /* 浅橄榄绿 */
+    background-image: 
+        radial-gradient(#8BC34A 15%, transparent 16%),
+        radial-gradient(#8BC34A 15%, transparent 16%);
+    background-size: 10px 10px;
+    background-position: 0 0, 5px 5px;
+    border: 1px dashed #689F38;
+}
+
+/* 地形样式 - 兽穴 (深红/强调色，但在绿色主题下稍微压暗) */
+.cell.den {
+    background-color: #F1F8E9;
+    border: 3px double #C62828; /* 经典的红框 */
+    color: #B71C1C;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 10px rgba(198, 40, 40, 0.1);
+}
+.cell.den::after {
+    content: "兽穴";
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+@media (min-width: 768px) {
+    .cell.den::after {
+        font-size: 14px;
+    }
+}
+
+/* 棋子样式 */
+.piece {
+    width: 90%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    background: transparent;
+    border: none; 
+    box-shadow: none;
+}
+
+.piece-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.3), inset 0 2px 3px rgba(255,255,255,0.3);
+    transition: all 0.2s;
+    background-color: #F5F5F5; /* 棋子底色：米白 */
+    border: 4px solid #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* 棋子图片 */
+.piece-inner img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* 棋子悬浮 */
+.piece:hover .piece-inner {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 10px rgba(0,0,0,0.35);
+}
+
+/* 选中状态 - 绿色光晕 */
+.cell.selected {
+    background-color: rgba(129, 199, 132, 0.3) !important;
+}
+.cell.selected::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px; right: 2px; bottom: 2px;
+    border: 2px solid #43A047;
+    border-radius: 4px;
+    animation: pulse-border 2s infinite;
+}
+/* 移除之前可能残留的 before */
+.cell.selected::before { content: none; }
+
+@keyframes pulse-border {
+    0% { opacity: 0.6; box-shadow: 0 0 0 0 rgba(67, 160, 71, 0.4); }
+    70% { opacity: 1; box-shadow: 0 0 0 4px rgba(67, 160, 71, 0); }
+    100% { opacity: 0.6; box-shadow: 0 0 0 0 rgba(67, 160, 71, 0); }
+}
+
+/* 可移动提示 */
+.cell.valid-move::before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: rgba(56, 142, 60, 0.8); /* 深绿点 */
+    border-radius: 50%;
+    z-index: 5;
+    animation: none;
+}
+
+.cell.valid-move.enemy::before {
+    background-color: transparent;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    border: 2px solid #E53935;
+    box-shadow: inset 0 0 5px rgba(229, 57, 53, 0.2);
+}
+
+/* 上一步移动标记 */
+.cell.last-move-from {
+    background-color: rgba(255, 235, 59, 0.2) !important;
+}
+.cell.last-move-from::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 50%;
+}
+
+.cell.last-move-to {
+    background-color: rgba(255, 235, 59, 0.25) !important;
+    box-shadow: inset 0 0 0 1px rgba(251, 192, 45, 0.5);
+}
+
+/* 玩家状态 - 融入绿色主题 */
+.player-active {
+    background-color: #F1F8E9 !important; /* 浅绿背景 */
+    border-left: 4px solid #1E88E5 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    transform: scale(1.05);
+}
+#player-red.player-active {
+    border-left-color: #E53935 !important;
+    background-color: #FFEBEE !important; /* 浅红背景 */
+}
+
+/* 动画类 */
+.piece-appear {
+    animation: zoom-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes zoom-in {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Tooltip 样式 */
+.tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    white-space: pre-line;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transform: translate(-50%, -100%);
+    margin-top: -8px;
+}
+.tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -4px;
+    border-width: 4px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+}
