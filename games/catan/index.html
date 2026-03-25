@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>卡坦岛 (Catan) - 在线畅玩</title>
+    <script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/tailwind.min.js"></script>
+    <script src="../../js/lib/peerjs.min.js"></script>
+    <script src="../../js/peer-config.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-blue-50 text-slate-800 font-sans h-screen flex flex-col overflow-hidden">
+
+    <!-- 桌面端导航 -->
+    <nav class="hidden md:block bg-white border-b border-slate-200 fixed w-full z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="http://game.7and5.cn" class="text-2xl font-bold flex items-center gap-2 text-slate-800">
+                <span class="text-3xl">🎲</span>
+                <span>7and5</span>
+            </a>
+            <div class="space-x-8 font-medium">
+                <a href="http://game.7and5.cn/library.html" class="text-slate-600 hover:text-orange-500 transition-colors">桌游库</a>
+                <a href="http://game.7and5.cn/online.html" class="text-orange-500 border-b-2 border-orange-500 pb-1">在线畅玩</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- 移动端头部 -->
+    <header class="md:hidden bg-white border-b border-slate-200 fixed top-0 w-full z-50 h-14 flex items-center px-4 shadow-sm">
+        <a href="http://game.7and5.cn/online.html" class="flex items-center justify-center w-10 h-10 -ml-2 text-slate-500 hover:text-orange-500 transition-colors rounded-full active:bg-slate-100">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+        </a>
+        <h1 class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-bold text-slate-800">斗兽棋</h1>
+    </header>
+
+    <main class="w-full flex-grow flex flex-col relative overflow-hidden pt-14 md:pt-20 safe-area-bottom">
+        
+        <!-- 游戏状态指示器 (PC 右上角 / 移动端隐藏) -->
+        <div id="game-status-indicator" class="hidden md:flex absolute top-24 right-8 bg-white/90 backdrop-blur px-5 py-3 rounded-xl shadow-md border border-slate-200 z-30 items-center gap-3 transition-all duration-300">
+            <div id="status-dot" class="w-3 h-3 rounded-full bg-slate-400 animate-pulse"></div>
+            <span id="status-text" class="text-slate-700 font-bold text-sm">等待开始...</span>
+        </div>
+
+        <!-- 大厅区域 -->
+        <div id="lobby" class="max-w-md mx-auto w-full p-4 overflow-y-auto">
+
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-6">
+                <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">卡坦岛 Catan</h2>
+                    
+                    <div id="create-room-section" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="btn-ai" class="bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-900 transition-all transform hover:scale-[1.02]">
+                                人机对战
+                            </button>
+                            <button id="btn-pvp" class="bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all transform hover:scale-[1.02]">
+                                双人对战
+                            </button>
+                        </div>
+                        <button id="btn-create" class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold hover:bg-orange-600 transition-all transform hover:scale-[1.02]">
+                            创建联机房间
+                        </button>
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+                            <div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-slate-500">或者</span></div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="room-id-input" placeholder="输入房间ID加入" class="flex-grow px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800">
+                            <button id="btn-join" class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-900 transition-colors whitespace-nowrap">
+                                加入
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="waiting-section" class="hidden space-y-6 text-center">
+                        <div class="animate-spin text-4xl mx-auto">⏳</div>
+                        <p id="waiting-msg" class="text-slate-600">等待其他玩家加入...</p>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                            <p class="text-xs text-slate-400 mb-2 uppercase font-bold">房间链接</p>
+                            <div class="flex gap-2">
+                                <input type="text" id="share-url" readonly class="flex-grow bg-white border border-slate-200 px-3 py-1 rounded text-sm text-slate-600">
+                                <button id="btn-copy" disabled class="text-slate-300 font-medium text-sm cursor-not-allowed">复制</button>
+                            </div>
+                        </div>
+                        <div id="player-list-lobby" class="text-left bg-slate-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-slate-700 mb-2">已加入玩家:</h4>
+                            <ul class="list-disc list-inside text-slate-600" id="lobby-players">
+                                <!-- JS populated -->
+                            </ul>
+                            <button id="btn-add-bot" class="hidden mt-2 text-sm bg-indigo-100 text-indigo-700 px-3 py-1 rounded hover:bg-indigo-200">
+                                + 添加电脑玩家
+                            </button>
+                        </div>
+                        <button id="btn-start-game" class="hidden w-full bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all">
+                            开始游戏
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 游戏规则区域 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-lg mb-3 flex items-center gap-2 text-slate-700">
+                        <span class="text-xl">📜</span> 游戏规则
+                    </h3>
+                    <div class="text-sm text-slate-600 space-y-2 leading-relaxed">
+                        <p>1. <span class="font-bold text-slate-800">目标：</span>获得10分获胜（村庄1分，城市2分）。</p>
+                        <p>2. <span class="font-bold text-slate-800">资源：</span>掷骰子产出资源，建设需要消耗资源。</p>
+                        <p>3. <span class="font-bold text-slate-800">建设：</span>道路需连通，村庄需建在路口且间隔两段路。</p>
+                        <p>4. <span class="font-bold text-slate-800">交易：</span>可以与银行或玩家交易。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 游戏主界面 (默认隐藏) -->
+            <div id="game-container" class="hidden w-full flex-grow flex flex-col md:flex-row bg-slate-100 overflow-hidden relative">
+                
+                <!-- 左上角 玩家信息 -->
+                <div id="game-info" class="md:absolute md:top-4 md:left-4 md:transform-none panel-glass p-2 rounded-xl shadow-lg z-20 flex flex-col gap-2 w-full md:w-auto max-h-[30vh] md:max-h-[50vh] overflow-y-auto transition-all">
+                    <!-- 回合指示 -->
+                    <div class="flex items-center justify-between md:justify-start gap-2 px-2 py-1 bg-white/50 rounded-lg">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" id="turn-dot"></div>
+                            <span id="turn-indicator" class="font-bold text-sm text-slate-800">你的回合</span>
+                        </div>
+                        <button id="toggle-info-btn" class="md:hidden text-xs text-slate-500 bg-white/80 px-2 py-0.5 rounded border border-slate-200">收起</button>
+                    </div>
+                    
+                    <!-- 统一的玩家列表 (包含自己) -->
+                    <div id="player-list-container" class="transition-all duration-300 overflow-hidden">
+                        <table class="w-full text-xs md:text-sm text-left border-collapse">
+                        <thead>
+                            <tr class="text-slate-500 border-b border-slate-300/50">
+                                <th class="pb-1 pl-1 font-medium">玩家</th>
+                                <th class="pb-1 px-1 font-medium text-center">分</th>
+                                <th class="pb-1 px-1 font-medium text-center" title="砖块">🧱</th>
+                                <th class="pb-1 px-1 font-medium text-center" title="木材">🪵</th>
+                                <th class="pb-1 px-1 font-medium text-center" title="羊毛">🐑</th>
+                                <th class="pb-1 px-1 font-medium text-center" title="粮食">🌾</th>
+                                <th class="pb-1 px-1 font-medium text-center" title="矿石">🪨</th>
+                                <th class="pb-1 px-1 font-medium text-center" title="总数">🃏</th>
+                            </tr>
+                        </thead>
+                        <tbody id="player-table-body">
+                            <!-- JS 动态填充 -->
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 中间 游戏棋盘 -->
+                <div class="flex-grow relative overflow-hidden bg-slate-200 touch-none" id="board-container">
+                    <svg id="game-svg" class="w-full h-full block">
+                        <defs id="svg-defs"></defs>
+                        <g id="game-layer"></g>
+                    </svg>
+                    
+                </div>
+
+                <!-- 骰子结果显示 (独立悬浮) -->
+                <div id="game-log-container" class="absolute bottom-36 left-4 md:bottom-44 md:left-8 w-64 h-48 pointer-events-none overflow-hidden flex flex-col justify-end z-10 opacity-80 hover:opacity-100 transition-opacity">
+                    <div id="game-log" class="space-y-1 p-2 overflow-y-auto max-h-full pointer-events-none md:pointer-events-auto text-sm text-shadow-sm scrollbar-hide mask-gradient-top">
+                        <!-- JS populated logs -->
+                    </div>
+                </div>
+
+                <div id="dice-result" class="absolute bottom-24 left-4 md:bottom-32 md:left-8 bg-white/90 backdrop-blur px-3 py-2 rounded-xl shadow-lg border border-slate-200 flex items-center gap-3 z-30 transition-all hidden">
+                    <div id="die-1" class="w-8 h-8 bg-white border border-slate-300 rounded-lg flex items-center justify-center text-xl font-bold text-slate-800 shadow-sm">?</div>
+                    <div id="die-2" class="w-8 h-8 bg-white border border-slate-300 rounded-lg flex items-center justify-center text-xl font-bold text-slate-800 shadow-sm">?</div>
+                    <span id="dice-total" class="font-bold text-slate-500 text-sm ml-1">= 0</span>
+                </div>
+
+                <!-- 底部操作栏 -->
+                <div id="game-controls" class="md:absolute md:bottom-8 md:right-8 md:left-auto md:transform-none md:rounded-2xl flex flex-row md:flex-row md:gap-3 gap-1 justify-between md:justify-center items-center md:shadow-xl z-20 w-full md:w-auto fixed bottom-0 left-0 bg-white/95 md:bg-white/90 backdrop-blur border-t border-slate-200 md:border-none pb-safe px-1 py-1 md:p-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] md:shadow-xl">
+                    
+                    <button id="btn-help" class="btn-action bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 flex-1 md:flex-none">
+                        <span class="text-xl">❓</span>
+                        <span class="text-[10px] md:hidden block font-bold">帮助</span>
+                        <span class="hidden md:inline ml-1">帮助</span>
+                    </button>
+
+                    <div class="hidden md:block h-8 w-px bg-slate-300 mx-1"></div>
+                    
+                    <button id="btn-roll" class="btn-action bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-orange-200 flex-1 md:flex-none">
+                        <span class="text-xl">🎲</span> <span class="text-[10px] md:text-sm font-bold block md:inline">掷骰子</span>
+                    </button>
+                    
+                    <button id="btn-build-road" class="btn-action bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 relative group flex-1 md:flex-none" data-type="road">
+                        <svg class="w-6 h-6 md:w-5 md:h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-2v20h2V2zm-4 0h-2v20h2V2zm-4 0H8v20h2V2zM6 2H4v20h2V2z"/></svg> 
+                        <span class="text-[10px] md:hidden block font-bold">建路</span>
+                        <span class="hidden md:inline ml-1">建路</span>
+                    </button>
+                    
+                    <button id="btn-build-settlement" class="btn-action bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 relative group flex-1 md:flex-none" data-type="settlement">
+                        <svg class="w-6 h-6 md:w-5 md:h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg> 
+                        <span class="text-[10px] md:hidden block font-bold">村庄</span>
+                        <span class="hidden md:inline ml-1">建村庄</span>
+                    </button>
+                    
+                    <button id="btn-build-city" class="btn-action bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 relative group flex-1 md:flex-none" data-type="city">
+                        <svg class="w-6 h-6 md:w-5 md:h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19 11h-2v-4h-2v4h-2v-4h-2v4H9V7h10V5H5v14h14v-8zM7 17h2v-2H7v2zm0-4h2v-2H7v2zm0-4h2V7H7v2z"/></svg> 
+                        <span class="text-[10px] md:hidden block font-bold">城市</span>
+                        <span class="hidden md:inline ml-1">建城市</span>
+                    </button>
+                    
+                    <div class="hidden md:block h-8 w-px bg-slate-300 mx-1"></div>
+
+                    <button id="btn-buy-dev" class="btn-action bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 flex-1 md:flex-none relative">
+                        <span class="text-xl">🃏</span>
+                        <span class="text-[10px] md:hidden block font-bold">发展卡</span>
+                        <span class="hidden md:inline ml-1">发展卡</span>
+                    </button>
+                    
+                    <button id="btn-trade" class="btn-action bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 flex-1 md:flex-none">
+                        <span class="text-xl">🤝</span> 
+                        <span class="text-[10px] md:hidden block font-bold">交易</span>
+                        <span class="hidden md:inline ml-1">交易</span>
+                    </button>
+                    
+                    <div class="hidden md:block h-8 w-px bg-slate-300 mx-1"></div>
+                    
+                    <button id="btn-end-turn" class="btn-action bg-slate-800 text-white hover:bg-slate-900 shadow-slate-300 flex-1 md:flex-none">
+                        <span class="text-xl md:hidden">🛑</span>
+                        <span class="text-[10px] md:text-sm font-bold block md:inline">结束</span>
+                    </button>
+                </div>
+            </div>
+
+    </main>
+
+    <script src="script.js"></script>
+    
+    <!-- 悬浮 Tooltip (跟随鼠标或固定位置) -->
+    <!-- 移动到 body 底部 -->
+
+    <!-- 帮助模态框 -->
+    <div id="help-modal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <!-- Header -->
+            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <span class="text-2xl">📖</span> 游戏指南
+                </h3>
+                <button id="btn-close-help-header" class="text-slate-400 hover:text-slate-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 transition-colors">✕</button>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 overflow-y-auto space-y-6 text-slate-700">
+                <!-- 建设成本 -->
+                <section>
+                    <h4 class="font-bold text-lg mb-3 pb-1 border-b border-slate-200 text-slate-800">🛠️ 建设成本</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <div class="w-10 h-10 flex items-center justify-center bg-white rounded shadow-sm text-2xl">🛣️</div>
+                            <div>
+                                <div class="font-bold">道路</div>
+                                <div class="text-sm text-slate-500 flex gap-1">
+                                    <span class="text-amber-700">🧱砖</span> + <span class="text-amber-900">🪵木</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <div class="w-10 h-10 flex items-center justify-center bg-white rounded shadow-sm text-2xl">🏠</div>
+                            <div>
+                                <div class="font-bold">村庄 (1分)</div>
+                                <div class="text-sm text-slate-500 flex gap-1 flex-wrap">
+                                    <span class="text-amber-700">🧱砖</span> + <span class="text-amber-900">🪵木</span> + <span class="text-lime-700">🐑羊</span> + <span class="text-yellow-600">🌾粮</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <div class="w-10 h-10 flex items-center justify-center bg-white rounded shadow-sm text-2xl">🏰</div>
+                            <div>
+                                <div class="font-bold">城市 (2分)</div>
+                                <div class="text-sm text-slate-500 flex gap-1">
+                                    <span class="text-yellow-600">🌾粮x2</span> + <span class="text-slate-600">🪨矿x3</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <div class="w-10 h-10 flex items-center justify-center bg-white rounded shadow-sm text-2xl">🃏</div>
+                            <div>
+                                <div class="font-bold">发展卡</div>
+                                <div class="text-sm text-slate-500 flex gap-1">
+                                    <span class="text-lime-700">🐑羊</span> + <span class="text-yellow-600">🌾粮</span> + <span class="text-slate-600">🪨矿</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 基础规则 -->
+                <section>
+                    <h4 class="font-bold text-lg mb-3 pb-1 border-b border-slate-200 text-slate-800">📜 基础规则</h4>
+                    <ul class="list-disc pl-5 space-y-2 text-sm">
+                        <li><span class="font-semibold">胜利条件：</span>第一个获得 <span class="font-bold text-orange-600">10分</span> 的玩家获胜（2人对战需15分）。</li>
+                        <li><span class="font-semibold">最长道路：</span>连续道路长度达到5条且最长的玩家获得 <span class="font-bold text-blue-600">2分</span>。</li>
+                        <li><span class="font-semibold">最大军队：</span>打出骑士卡达到3张且最多的玩家获得 <span class="font-bold text-red-600">2分</span>。</li>
+                        <li><span class="font-semibold">盗贼 (7点)：</span>掷出7点时，手牌超过7张的玩家需弃掉一半。移动盗贼可封锁地块并抢夺资源。</li>
+                        <li><span class="font-semibold">交易：</span>你可以与银行(4:1)、港口(3:1/2:1)或玩家进行资源交易。</li>
+                    </ul>
+                </section>
+            </div>
+            
+            <!-- Footer -->
+            <div class="p-4 border-t border-slate-100 bg-slate-50 text-right">
+                <button id="btn-close-help-footer" class="px-6 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors font-medium">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 交易模态框 -->
+    <div id="trade-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-lg text-slate-800">交易中心</h3>
+                <button id="btn-close-trade" class="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-200 transition-colors">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            
+            <div class="p-0 overflow-y-auto">
+                <!-- 选项卡 -->
+                <div class="flex border-b border-slate-200">
+                    <button id="tab-bank" class="flex-1 py-3 text-sm font-bold text-blue-600 border-b-2 border-blue-600 bg-blue-50 transition-colors">银行/港口交易</button>
+                    <button id="tab-player" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors">玩家交易</button>
+                </div>
+                
+                <!-- 银行交易内容 -->
+                <div id="panel-bank" class="p-6 space-y-6">
+                    <p class="text-sm text-slate-500 mb-4">选择你要支付的资源和想获得的资源。比例根据你拥有的港口自动计算。</p>
+                    
+                    <div class="flex items-center justify-between gap-4">
+                        <!-- 支付列 -->
+                        <div class="flex-1 space-y-2">
+                            <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider">支付 (拥有)</h4>
+                            <div class="space-y-2" id="trade-pay-list">
+                                <!-- JS 填充 -->
+                            </div>
+                        </div>
+                        
+                        <div class="text-slate-300">
+                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </div>
+                        
+                        <!-- 获得列 -->
+                        <div class="flex-1 space-y-2">
+                            <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider">获得</h4>
+                            <div class="grid grid-cols-1 gap-2" id="trade-get-list">
+                                <!-- JS 填充 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 玩家交易内容 -->
+                <div id="panel-player" class="hidden p-6 space-y-6">
+                    <p class="text-sm text-slate-500 mb-4">选择交易对象和交换内容。</p>
+                    
+                    <!-- 目标玩家 -->
+                    <div class="space-y-2">
+                        <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider">交易对象</h4>
+                        <div class="flex gap-2 overflow-x-auto pb-2" id="trade-target-list">
+                            <!-- JS 填充 -->
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- 我给出 -->
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider">我给出</h4>
+                            <div class="space-y-2" id="p-trade-give-list">
+                                <!-- JS 填充: 资源 + 数量控制 -->
+                            </div>
+                        </div>
+
+                        <!-- 我想要 -->
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-xs uppercase text-slate-400 tracking-wider">我想要</h4>
+                            <div class="space-y-2" id="p-trade-get-list">
+                                <!-- JS 填充: 资源 + 数量控制 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end">
+                <button id="btn-confirm-trade" class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-blue-200 shadow-lg">
+                    确认交易
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 发展卡模态框 -->
+    <div id="dev-card-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-lg text-slate-800">发展卡</h3>
+                <button id="btn-close-dev" class="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-200 transition-colors">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto space-y-6">
+                <!-- 购买区域 -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-bold text-slate-700">购买发展卡</h4>
+                        <div class="text-sm text-slate-500 flex gap-1">
+                             <span class="text-lime-700">🐑羊</span> + <span class="text-yellow-600">🌾粮</span> + <span class="text-slate-600">🪨矿</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-3">随机获得一张卡牌 (骑士、胜利点、道路、丰收、垄断)</p>
+                    <button id="btn-buy-dev-confirm" class="w-full py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-indigo-200 shadow-lg">
+                        购买 (花费资源)
+                    </button>
+                </div>
+
+                <!-- 我的卡牌 -->
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-3 flex items-center gap-2">
+                        <span>我的卡牌</span>
+                        <span id="my-dev-count" class="bg-slate-200 text-slate-600 text-xs px-2 py-0.5 rounded-full">0</span>
+                    </h4>
+                    <div id="my-dev-list" class="space-y-3">
+                        <!-- JS 填充 -->
+                        <div class="text-center text-slate-400 py-4 text-sm">暂无发展卡</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 垄断/丰收卡 资源选择模态框 -->
+    <div id="resource-select-modal" class="fixed inset-0 bg-black/60 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4 animate-bounce-in">
+            <h3 id="res-select-title" class="font-bold text-lg text-slate-800 text-center">选择资源</h3>
+            <div class="grid grid-cols-3 gap-3" id="res-select-options">
+                <!-- JS Populated -->
+            </div>
+            <button id="btn-cancel-res-select" class="w-full py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">取消</button>
+        </div>
+    </div>
+
+    <!-- 交易请求通知 (接收方) -->
+    <div id="trade-offer-modal" class="fixed inset-0 bg-black/50 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-6 animate-bounce-in">
+            <div class="text-center space-y-2">
+                <h3 class="text-xl font-bold text-slate-800">收到交易请求!</h3>
+                <p class="text-slate-600">来自 <span id="offer-sender" class="font-bold"></span> 的请求:</p>
+            </div>
+
+            <div class="flex items-center justify-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                <div class="text-center">
+                    <div class="text-xs text-slate-400 uppercase font-bold mb-1">你失去</div>
+                    <div id="offer-give" class="font-bold text-red-500 text-lg"></div>
+                </div>
+                <div class="text-slate-300">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-slate-400 uppercase font-bold mb-1">你获得</div>
+                    <div id="offer-get" class="font-bold text-green-500 text-lg"></div>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button id="btn-reject-offer" class="flex-1 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
+                    拒绝
+                </button>
+                <button id="btn-accept-offer" class="flex-1 py-3 rounded-xl font-bold text-white bg-green-500 hover:bg-green-600 shadow-lg shadow-green-200 transition-colors">
+                    接受交易
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 胜利弹窗 -->
+    <div id="victory-modal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-bounce-in text-center relative overflow-hidden">
+            <!-- 装饰背景 -->
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-400"></div>
+            
+            <div class="mb-6">
+                <div class="text-6xl mb-4">🏆</div>
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">游戏结束!</h2>
+                <div id="winner-name" class="text-xl font-bold text-orange-600">玩家名 获胜</div>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">最终得分</h3>
+                <div id="victory-scores" class="space-y-3">
+                    <!-- JS 填充分数 -->
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="location.reload()" class="flex-1 py-3 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-900 transition-transform hover:scale-[1.02] shadow-lg">
+                    再来一局
+                </button>
+                <button onclick="$('#victory-modal').addClass('hidden')" class="flex-1 py-3 bg-white text-slate-600 border border-slate-200 rounded-xl font-bold hover:bg-slate-50 transition-colors">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 通知容器 -->
+    <div id="toast-container" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- 悬浮 Tooltip (移到 body 最后以确保层级) -->
+</body>
+</html>

@@ -1,0 +1,295 @@
+:root {
+    --cell-size: 34px; 
+    --wall-thickness: 8px; /* Thinner walls for elegance */
+    --gap-size: 0px; 
+    
+    /* Modern Palette */
+    --board-bg: #e2e8f0; /* Soft slate-200 for grid lines */
+    --cell-bg: #ffffff;
+    --cell-hover: #f8fafc; /* Very subtle hover */
+    
+    --wall-color: #334155; /* slate-700 */
+    --wall-hover: rgba(51, 65, 85, 0.3);
+    
+    /* Player Colors - Vibrant but matte */
+    --p1-color: #3b82f6; /* blue-500 */
+    --p2-color: #ef4444; /* red-500 */
+    --p3-color: #10b981; /* emerald-500 */
+    --p4-color: #f59e0b; /* amber-500 */
+    
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --shadow-float: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+}
+
+@media (min-width: 640px) {
+    :root {
+        --cell-size: 54px; /* Larger */
+        --wall-thickness: 12px;
+    }
+}
+
+.board-container {
+    display: inline-block;
+    background: var(--board-bg);
+    padding: 1px; /* Minimal border */
+    border-radius: 8px; /* Rounded corners */
+    user-select: none;
+    box-shadow: var(--shadow-float);
+    max-width: 100%;
+}
+
+/* 增加触摸热区大小，提升移动端体验 */
+.wall-hotspot {
+    touch-action: none; 
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(9, var(--cell-size));
+    grid-template-rows: repeat(9, var(--cell-size));
+    gap: 1px; 
+    background-color: var(--board-bg);
+    border-radius: 7px; /* Inner radius */
+    overflow: hidden; /* Clip cells to corners */
+}
+
+/* 棋盘格子 */
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    background-color: var(--cell-bg);
+    border: none;
+    border-radius: 0;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.cell:hover {
+    background-color: var(--cell-hover);
+    z-index: 1;
+}
+
+/* 玩家棋子 - Minimalist */
+.pawn {
+    width: 50%; /* Smaller for elegance */
+    height: 50%;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smooth spring */
+    pointer-events: none;
+    
+    /* Center Text */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    
+    /* Matte finish, no harsh shadows */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pawn.p1 { background: var(--p1-color); }
+.pawn.p2 { background: var(--p2-color); }
+.pawn.p3 { background: var(--p3-color); }
+.pawn.p4 { background: var(--p4-color); }
+
+/* 可移动提示 - Subtle dot */
+.cell.valid-move::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #cbd5e1; /* slate-300 */
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+
+.cell.valid-move:hover::after {
+    background: #94a3b8; /* slate-400 */
+    transform: translate(-50%, -50%) scale(1.4);
+    opacity: 1;
+}
+
+/* 墙的容器层 */
+#wall-layer {
+    z-index: 20;
+}
+
+/* 墙 - Modern flat style */
+.wall {
+    position: absolute;
+    background-color: var(--wall-color);
+    border-radius: 99px; /* Pill shape */
+    z-index: 5;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* Soft lift */
+    pointer-events: auto; 
+    transition: opacity 0.2s, background-color 0.2s, transform 0.2s;
+}
+
+/* 墙的样式：水平 */
+.wall.h {
+    height: var(--wall-thickness);
+    width: calc(2 * var(--cell-size) + 1px);
+}
+
+/* 墙的样式：垂直 */
+.wall.v {
+    width: var(--wall-thickness);
+    height: calc(2 * var(--cell-size) + 1px);
+}
+
+/* 预览墙 */
+.wall.preview {
+    opacity: 0.4;
+    cursor: pointer;
+    background-color: var(--wall-color);
+    box-shadow: none;
+    transform: scale(0.95); /* Slightly smaller indicating preview */
+}
+
+.wall.preview.invalid {
+    background-color: #ef4444 !important; 
+    opacity: 0.2;
+    cursor: not-allowed;
+}
+
+/* 活跃玩家状态 */
+.player-status {
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    background: white;
+}
+.player-status.active {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.player-status.p1-active {
+    border-color: var(--p1-color);
+}
+.player-status.p2-active {
+    border-color: var(--p2-color);
+}
+.player-status.p3-active {
+    border-color: var(--p3-color);
+}
+.player-status.p4-active {
+    border-color: var(--p4-color);
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.5); /* slate-900/50 */
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
+.modal {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    text-align: center;
+    animation: modal-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modal-pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.modal-header h2 {
+    margin-bottom: 24px;
+}
+
+.winner-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.winner-icon {
+    margin-bottom: 16px;
+}
+
+.winner-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.modal-footer {
+    display: flex;
+}
+
+.btn.primary {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+    background: linear-gradient(to right, #0ea5e9, #0284c7); /* Sky blue gradient */
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.3);
+    transition: all 0.2s;
+}
+
+.btn.primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 8px -1px rgba(14, 165, 233, 0.4);
+}
+
+.btn.secondary {
+    background: white;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn.secondary:hover {
+    background: #f1f5f9;
+    color: #334155;
+    border-color: #94a3b8;
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+    :root {
+        --cell-size: 32px;
+        --gap-size: 10px;
+    }
+    .board-container {
+        padding: 16px;
+    }
+}

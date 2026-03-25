@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>路墙棋 (Quoridor) - 在线畅玩</title>
+    <script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/tailwind.min.js"></script>
+    <script src="../../js/lib/peerjs.min.js"></script>
+    <script src="../../js/peer-config.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden md:block bg-white border-b border-slate-200 fixed w-full z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="../../index.html" class="text-2xl font-bold flex items-center gap-2 text-slate-800">
+                <span class="text-3xl">🧱</span>
+                <span>桌游之家</span>
+            </a>
+            <div class="space-x-8 font-medium">
+                <a href="../../library.html" class="text-slate-600 hover:text-orange-500 transition-colors">桌游库</a>
+                <a href="../../online.html" class="text-orange-500 border-b-2 border-orange-500 pb-1">在线畅玩</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile App Header -->
+    <header class="md:hidden bg-white border-b border-slate-200 fixed top-0 w-full z-50 h-14 flex items-center px-4 shadow-sm">
+        <a href="../../online.html" class="flex items-center justify-center w-10 h-10 -ml-2 text-slate-500 hover:text-orange-500 transition-colors rounded-full active:bg-slate-100">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+        </a>
+        <h1 class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-bold text-slate-800">路墙棋</h1>
+    </header>
+
+    <main class="container mx-auto px-4 pt-32 pb-20 flex-grow flex flex-col">
+        <!-- 大厅区域 -->
+        <div id="lobby" class="max-w-md mx-auto w-full">
+
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-6">
+                <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">路墙棋 Quoridor</h2>
+                    
+                    <div id="create-room-section" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="btn-ai" class="bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-900 transition-all transform hover:scale-[1.02]">
+                                人机对战
+                            </button>
+                            <button id="btn-pvp" class="bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all transform hover:scale-[1.02]">
+                                本地双人
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <button id="btn-create" class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold hover:bg-orange-600 transition-all transform hover:scale-[1.02]">
+                                创建房间
+                            </button>
+                        </div>
+
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+                            <div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-slate-500">或者</span></div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="room-id-input" placeholder="输入房间ID加入" class="flex-grow px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800">
+                            <button id="btn-join" class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-900 transition-colors whitespace-nowrap">
+                                加入
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="waiting-section" class="hidden space-y-6 text-center">
+                        <div class="animate-spin text-4xl mx-auto">⏳</div>
+                        <p id="waiting-message" class="text-slate-600">等待对手加入...</p>
+                        
+                        <div id="player-list-lobby" class="text-left bg-slate-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-slate-700 mb-2">已加入玩家:</h4>
+                            <ul class="list-disc list-inside text-slate-600" id="lobby-players">
+                                <!-- JS populated -->
+                            </ul>
+                            <button id="btn-add-bot" class="hidden mt-2 text-sm bg-indigo-100 text-indigo-700 px-3 py-1 rounded hover:bg-indigo-200">
+                                + 添加电脑玩家
+                            </button>
+                        </div>
+                        
+                        <button id="lobby-start-btn" class="hidden w-full bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition-all transform hover:scale-[1.02] shadow-lg">
+                            开始游戏
+                        </button>
+
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                            <p class="text-xs text-slate-400 mb-2 uppercase font-bold">房间链接</p>
+                            <div class="flex gap-2">
+                                <input type="text" id="share-url" readonly class="flex-grow bg-white border border-slate-200 px-3 py-1 rounded text-sm text-slate-600">
+                                <button id="btn-copy" disabled class="text-slate-300 font-medium text-sm cursor-not-allowed">复制</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 游戏规则区域 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-lg mb-3 flex items-center gap-2 text-slate-700">
+                        <span class="text-xl">📜</span> 游戏规则
+                    </h3>
+                    <div class="text-sm text-slate-600 space-y-2 leading-relaxed">
+                        <p>1. <span class="font-bold text-slate-800">目标：</span>最先到达对面底线的玩家获胜。</p>
+                        <p>2. <span class="font-bold text-slate-800">移动：</span>每回合可以选择移动一格（上下左右）或者放置一堵墙。</p>
+                        <p>3. <span class="font-bold text-slate-800">放墙：</span>墙会阻挡两个格子长度。墙不能与已有的墙重叠或交叉。</p>
+                        <p>4. <span class="font-bold text-slate-800">禁手：</span>不能完全封死任何玩家通往目标的道路。</p>
+                        <p>5. <span class="font-bold text-slate-800">跳过：</span>当与对手相邻时，可以跳过对手。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="game-board" class="hidden flex flex-col items-center w-full max-w-lg mx-auto">
+                <!-- 状态栏 -->
+                <div class="w-full bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-4 flex flex-col gap-4">
+                     <!-- 顶部：当前状态信息 -->
+                     <div class="text-center pb-2 border-b border-slate-100">
+                         <div id="status-message" class="font-bold text-slate-700 text-lg">等待开始...</div>
+                     </div>
+
+                     <!-- 玩家列表网格 -->
+                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                         <!-- P1 -->
+                         <div id="player1-status" class="player-status flex items-center gap-2 px-3 py-2 rounded-lg transition-colors justify-center">
+                             <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold shadow-sm flex-shrink-0">1</div>
+                             <div class="flex flex-col leading-tight">
+                                 <span class="text-xs text-slate-500 font-bold uppercase">P1</span>
+                                 <span class="text-sm font-bold text-slate-800 whitespace-nowrap">墙: <span id="p1-walls">10</span></span>
+                             </div>
+                         </div>
+
+                         <!-- P2 -->
+                         <div id="player2-status" class="player-status flex items-center gap-2 px-3 py-2 rounded-lg transition-colors justify-center">
+                            <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white font-bold shadow-sm flex-shrink-0">2</div>
+                            <div class="flex flex-col leading-tight">
+                                <span class="text-xs text-slate-500 font-bold uppercase">P2</span>
+                                <span class="text-sm font-bold text-slate-800 whitespace-nowrap">墙: <span id="p2-walls">10</span></span>
+                            </div>
+                        </div>
+
+                         <!-- P3 -->
+                         <div id="player3-status" class="player-status hidden flex items-center gap-2 px-3 py-2 rounded-lg transition-colors justify-center">
+                             <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold shadow-sm flex-shrink-0">3</div>
+                             <div class="flex flex-col leading-tight">
+                                 <span class="text-xs text-slate-500 font-bold uppercase">P3</span>
+                                 <span class="text-sm font-bold text-slate-800 whitespace-nowrap">墙: <span id="p3-walls">5</span></span>
+                             </div>
+                         </div>
+
+                         <!-- P4 -->
+                         <div id="player4-status" class="player-status hidden flex items-center gap-2 px-3 py-2 rounded-lg transition-colors justify-center">
+                             <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold shadow-sm flex-shrink-0">4</div>
+                             <div class="flex flex-col leading-tight">
+                                 <span class="text-xs text-slate-500 font-bold uppercase">P4</span>
+                                 <span class="text-sm font-bold text-slate-800 whitespace-nowrap">墙: <span id="p4-walls">5</span></span>
+                             </div>
+                         </div>
+                     </div>
+                </div>
+
+                <!-- 棋盘容器 -->
+                <div class="board-container relative bg-slate-50 p-2 rounded-2xl shadow-xl border border-slate-200 overflow-x-auto sm:overflow-visible flex justify-center">
+                    <div id="board-rotator" class="relative transition-transform duration-500 origin-center">
+                        <!-- 棋盘网格 -->
+                        <div id="board" class="grid grid-cols-9 gap-0 relative mx-auto">
+                            <!-- JS 动态生成格子和墙槽 -->
+                        </div>
+                        
+                        <!-- 悬浮层用于放置墙的预览 -->
+                        <div id="wall-layer" class="absolute inset-0 pointer-events-none"></div>
+                    </div>
+                </div>
+
+                <!-- 控制栏 -->
+                <div class="controls mt-6 w-full max-w-md">
+                    <div class="flex justify-center gap-4 mb-4">
+                        <button id="rotate-wall-btn" class="bg-slate-700 text-white px-4 py-2 rounded-lg shadow hover:bg-slate-800 active:scale-95 transition-all flex items-center gap-2">
+                            <span>🔄</span> 旋转墙 (R)
+                        </button>
+                        <button id="undo-btn" class="bg-white text-slate-600 border border-slate-300 px-4 py-2 rounded-lg shadow-sm hover:bg-slate-50 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            悔棋
+                        </button>
+                    </div>
+
+                    <div class="flex justify-center gap-4">
+                        <button id="start-game-btn" class="hidden bg-green-500 text-white px-6 py-2 rounded-lg shadow hover:bg-green-600 transition-colors font-bold">
+                            开始游戏
+                        </button>
+                        <button id="restart-btn" class="hidden bg-orange-500 text-white px-6 py-2 rounded-lg shadow hover:bg-orange-600 transition-colors font-bold">
+                            重新开始
+                        </button>
+                        <button id="exit-btn" class="bg-red-50 text-red-600 border border-red-200 px-6 py-2 rounded-lg hover:bg-red-100 transition-colors">
+                            退出房间
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+    </main>
+
+    <!-- 游戏结束弹窗 -->
+    <div id="modal-overlay" class="hidden modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div id="winner-display" class="winner-display">
+                    <div class="winner-icon text-4xl mb-2">🏆</div>
+                    <h2 class="winner-title">P1 获胜!</h2>
+                </div>
+            </div>
+            <div class="modal-footer flex-col gap-3">
+                <button id="modal-restart-btn" class="btn primary mb-3">再来一局</button>
+                <button onclick="$('#exit-btn').click(); $('#modal-overlay').addClass('hidden');" class="btn secondary w-full">返回大厅</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <div id="toast-container" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none"></div>
+</body>
+</html>
