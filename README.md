@@ -19,6 +19,14 @@ jungle/
 └── css/                # 少量自定义样式（主要使用 Tailwind）
 ```
 
+## 游戏目录
+
+```
+- **catan** – 卡坦岛
+- **quoridor** – 路墙棋
+- **jungle** – 斗兽棋
+```
+
 ## 🙏 致谢
  - PeerJS – 让 WebRTC 变得简单易用
  - Tailwind CSS – 高效的原子化 CSS 框架
