@@ -1,0 +1,340 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no, email=no, address=no">
+    <title>机智方块 -  精选桌游在线玩 - 免费无需注册，即刻开启桌游冒险 | 7and5</title>
+    <meta name="description" content="免费在线玩桌游！无需下载、注册，即刻体验《记忆大师》《达芬奇密码》《五子棋》《黑白棋》《拉密》《古诗连词》《井字棋》等精选经典与创新桌游。查找详细规则，开启您的下一场冒险！">
+    <meta name="keywords" content="免费在线桌游,桌游大全,桌游合集,精选桌游,无需下载注册,记忆大师,达芬奇密码,五子棋,黑白棋,拉密数字牌,古诗连词,井字棋,桌游规则">
+    <link rel="canonical" href="http://game.7and5.cn/">
+    <script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/tailwind.min.js"></script>
+    <script src="../../js/lib/peerjs.min.js"></script>
+    <script src="../../js/peer-config.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- 导航栏 -->
+    <nav class="hidden md:block bg-white border-b border-slate-200 fixed w-full z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold flex items-center gap-2 text-slate-800">
+                <span class="text-3xl">🎲</span>
+                <span>7and5</span>
+            </a>
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-8 font-medium">
+                <a href="/"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">首页</a>
+                <a href="/library.html"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">桌游库</a>
+                <a href="/online.html"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">在线畅玩</a>
+                <a href="/universal/lobby/index.html"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">游戏大厅</a>
+                <a href="//card.7and5.cn"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">卡牌大师</a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-slate-600 hover:text-orange-500 focus:outline-none p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Drawer -->
+    <div id="mobile-menu-overlay"
+        class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 opacity-0"></div>
+    <div id="mobile-menu-drawer"
+        class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-4 flex justify-end border-b border-slate-100">
+            <button id="close-menu-btn" class="text-slate-600 hover:text-orange-500 focus:outline-none p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+        <div class="flex flex-col p-4 font-medium space-y-2">
+            <a href="/"
+                class="block px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-orange-500 transition-colors">首页</a>
+            <a href="/library.html"
+                class="block px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-orange-500 transition-colors">桌游库</a>
+            <a href="/online.html"
+                class="block px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-orange-500 transition-colors">在线畅玩</a>
+        </div>
+    </div>
+        <!-- Mobile App Header -->
+    <header
+        class="md:hidden bg-white border-b border-slate-200 fixed top-0 w-full z-50 h-14 flex items-center px-4 shadow-sm">
+        <a href="/online.html"
+            class="flex items-center justify-center w-10 h-10 -ml-2 text-slate-500 hover:text-orange-500 transition-colors rounded-full active:bg-slate-100">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+        </a>
+        <h1 class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-bold text-slate-800">机智方块</h1>
+    </header>
+        
+<main class="container mx-auto px-4 pt-32 pb-20 flex-grow flex flex-col">
+
+    <!-- 大厅部分 -->
+    <div id="lobby" class="max-w-md mx-auto w-full">
+
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 mb-6">
+            <h2 class="text-xl md:text-2xl font-bold mb-6 text-center text-slate-800">机智方块 Smart Block</h2>
+
+            <div id="create-room-section" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="btn-single"
+                        class="bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-900 transition-all transform hover:scale-[1.02]">
+                        <i class="fas fa-user mr-2"></i>单人挑战
+                    </button>
+                    <button id="btn-multi"
+                        class="bg-blue-500 text-white py-3 rounded-xl font-bold hover:bg-blue-600 transition-all transform hover:scale-[1.02]">
+                        <i class="fas fa-users mr-2"></i>创建房间
+                    </button>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-slate-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm"><span
+                            class="px-2 bg-white text-slate-500">或者</span></div>
+                </div>
+
+                <div class="flex gap-2">
+                    <input type="text" id="room-id-input" placeholder="输入房间ID加入"
+                        class="flex-grow px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800">
+                    <button id="btn-join"
+                        class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-900 transition-colors whitespace-nowrap">
+                        加入
+                    </button>
+                </div>
+            </div>
+
+            <!-- 等待部分（初始隐藏） -->
+            <div id="waiting-section" class="hidden space-y-6 text-center">
+                <div class="animate-spin text-4xl mx-auto text-blue-500">⏳</div>
+                <p id="waiting-msg" class="text-slate-600">等待对手加入...</p>
+
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <p class="text-xs text-slate-400 mb-2 uppercase font-bold">房间链接</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="room-link" readonly
+                            class="flex-grow bg-white border border-slate-200 px-3 py-1 rounded text-sm text-slate-600">
+                        <button id="btn-copy" class="text-blue-500 font-medium text-sm hover:text-blue-700">复制</button>
+                    </div>
+                </div>
+
+                <button id="btn-cancel-wait" class="text-slate-400 hover:text-slate-600 text-sm">取消</button>
+            </div>
+        </div>
+
+        <!-- 规则部分 -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h3 class="font-bold text-lg mb-3 flex items-center gap-2 text-slate-700">
+                <span class="text-xl">📜</span> 游戏规则
+                <div class="ml-auto flex gap-3">
+                    <a href="/changelog/smart_block.html"
+                        class="text-slate-400 hover:text-orange-500 transition-colors flex items-center gap-1 text-sm font-medium"
+                        title="更新日志">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>日志</span>
+                    </a>
+                    <a href="/game_feedback/smart_block.html"
+                        class="text-slate-400 hover:text-orange-500 transition-colors flex items-center gap-1 text-sm font-medium"
+                        title="反馈与建议">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                        </svg>
+                        <span>反馈</span>
+                    </a>
+                </div>
+            </h3>
+            <div class="text-sm text-slate-600 space-y-2 leading-relaxed h-48 overflow-y-auto">
+                <p>1. <span class="font-bold text-slate-800">目标：</span>最先用积木填满版图剩余空间。</p>
+                <p>2. <span class="font-bold text-slate-800">设置障碍：</span>掷骰子决定7个障碍物的位置。</p>
+                <p>3. <span class="font-bold text-slate-800">竞速：</span>所有玩家同时开始，使用9块彩色积木填满剩余的空位。</p>
+                <p>4. <span class="font-bold text-slate-800">解谜：</span>每一局都保证至少有一个解。卡关时可使用“电脑求解”查看答案。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏房间部分（初始隐藏） -->
+    <div id="game-room" class="hidden flex flex-col h-full w-full max-w-6xl mx-auto">
+
+        <!-- 顶部栏 -->
+        <div class="flex justify-between items-center mb-2 md:mb-4 bg-white p-2 md:p-4 rounded-xl shadow-sm shrink-0">
+            <div class="flex items-center gap-4 flex-grow">
+                <div class="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg font-bold flex items-center gap-2">
+                    <i class="fas fa-clock"></i> <span id="timer">00:00</span>
+                </div>
+                <div class="text-slate-600 font-medium truncate" id="status-text">
+                    准备开始...
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button id="btn-leave"
+                    class="text-red-500 hover:text-red-700 font-medium px-3 py-1 border border-red-200 rounded hover:bg-red-50 transition">
+                    退出
+                </button>
+            </div>
+        </div>
+
+        <!-- 游戏内容 -->
+        <div class="flex-grow flex flex-col md:flex-row gap-2 md:gap-4 overflow-hidden items-stretch relative">
+
+            <!-- 左侧：棋盘区域 -->
+            <div
+                class="flex-grow flex flex-col items-center justify-start bg-slate-200 rounded-xl p-2 md:p-4 relative overflow-y-auto min-h-0">
+
+                <!-- 对手视图（紧凑行） -->
+                <div id="opponent-view" class="w-full flex justify-center mb-1 hidden transition-all">
+                    <div
+                        class="bg-white px-3 py-1 rounded-lg shadow-sm border border-slate-300 flex items-center gap-3">
+                        <div class="flex flex-col items-end">
+                            <span class="text-xs font-bold text-slate-500">对手</span>
+                            <span id="opponent-status" class="text-xs text-blue-600 font-mono">...</span>
+                        </div>
+                        <canvas id="opponent-board" width="120" height="120"
+                            class="w-12 h-12 bg-slate-50 rounded border border-slate-100"></canvas>
+                    </div>
+                </div>
+
+                <div id="game-container"
+                    class="relative bg-white p-1 md:p-2 rounded-lg shadow-xl border-4 border-slate-300 mt-0">
+                    <canvas id="game-board" width="480" height="480"
+                        class="cursor-pointer max-w-full h-auto w-[90vw] md:w-auto" style="max-height: 50vh;"></canvas>
+                </div>
+
+                <div class="flex space-x-2 md:space-x-4 mt-4 md:mt-6 w-full justify-center">
+                    <button id="btn-roll"
+                        class="bg-purple-600 text-white px-4 py-2 md:px-8 md:py-3 rounded-lg md:rounded-xl shadow-lg hover:bg-purple-700 transition transform hover:scale-105 font-bold text-sm md:text-lg flex items-center">
+                        <i class="fas fa-dice mr-1 md:mr-2"></i> 掷骰子
+                    </button>
+                    <button id="btn-reset"
+                        class="bg-slate-500 text-white px-3 py-2 md:px-6 md:py-3 rounded-lg md:rounded-xl shadow-lg hover:bg-slate-600 transition font-bold text-sm md:text-base">
+                        <i class="fas fa-undo mr-1 md:mr-2"></i> 重置
+                    </button>
+                    <button id="btn-solve"
+                        class="bg-red-500 text-white px-3 py-2 md:px-6 md:py-3 rounded-lg md:rounded-xl shadow-lg hover:bg-red-600 transition font-bold text-sm md:text-base hidden">
+                        <i class="fas fa-robot mr-1 md:mr-2"></i> 求解
+                    </button>
+                </div>
+            </div>
+
+            <!-- 右侧：积木区域 -->
+            <div
+                class="h-32 md:h-auto md:w-80 flex-shrink-0 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden mt-2 md:mt-0">
+                <div
+                    class="p-2 md:p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center md:block flex-shrink-0">
+                    <h3 class="font-bold text-slate-700 text-sm md:text-base">🧩 积木区域</h3>
+                    <p class="text-[10px] md:text-xs text-slate-500 md:mt-1">左右滑动查看 / 向上拖动上场</p>
+                </div>
+                <div id="pieces-container"
+                    class="flex-grow p-2 md:p-4 overflow-x-auto overflow-y-hidden flex md:flex-wrap gap-2 items-center md:justify-center md:content-start touch-pan-x">
+                    <!-- 积木在此生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- 隐藏模态框（如果需要）（目前使用大厅视图代替） -->
+<div id="countdown-overlay" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center hidden">
+    <div class="text-white font-bold text-9xl animate-pulse" id="countdown-number">3</div>
+</div>
+
+<div id="result-overlay" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center hidden">
+    <div
+        class="bg-white p-8 rounded-2xl text-center max-w-md w-full mx-4 shadow-2xl transform scale-100 transition-transform">
+        <div id="result-icon" class="text-6xl mb-4">🏆</div>
+        <h2 id="result-title" class="text-3xl font-bold text-slate-800 mb-2">游戏结束</h2>
+        <p id="result-message" class="text-xl text-slate-600 mb-6">...</p>
+        <button id="btn-result-close"
+            class="bg-purple-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-purple-700 transition w-full">
+            再来一局
+        </button>
+    </div>
+</div>
+
+
+    <!-- Footer -->
+    <footer id="game-footer" class="bg-slate-50 py-12 border-t border-slate-200">
+        <div class="container mx-auto px-4">
+            <div class="md:flex md:justify-between md:items-center">
+                <div class="text-center md:text-left mb-8 md:mb-0">
+                    <div class="text-2xl font-bold flex items-center justify-center md:justify-start gap-2 mb-4 text-slate-800">
+                        <span>🎲</span>
+                        <span>7and5 的桌游世界</span>
+                    </div>
+                    <p class="text-slate-500 text-sm">&copy; 2026 7and5. All rights reserved.</p>
+                </div>
+                <div class="text-center md:text-right">
+                    <div class="flex justify-center md:justify-end gap-6 text-sm font-medium text-slate-600">
+                        <a href="/sitemap.html" class="hover:text-orange-500 transition-colors">网站地图</a>
+                        <a href="/feedback.html" class="hover:text-orange-500 transition-colors">问题反馈</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!--页面js-->
+    
+<script src="dist/bundle.js?v=20260409"></script>
+
+   <script>
+        $(document).ready(function () {
+            const $btn = $('#mobile-menu-btn');
+            const $closeBtn = $('#close-menu-btn');
+            const $drawer = $('#mobile-menu-drawer');
+            const $overlay = $('#mobile-menu-overlay');
+
+            function openMenu() {
+                $overlay.removeClass('hidden');
+                // Force reflow
+                $overlay[0].offsetHeight;
+                $overlay.removeClass('opacity-0');
+                $drawer.removeClass('translate-x-full');
+                $('body').addClass('overflow-hidden');
+            }
+
+            function closeMenu() {
+                $overlay.addClass('opacity-0');
+                $drawer.addClass('translate-x-full');
+                setTimeout(() => {
+                    $overlay.addClass('hidden');
+                    $('body').removeClass('overflow-hidden');
+                }, 300);
+            }
+
+            $btn.on('click', openMenu);
+            $closeBtn.on('click', closeMenu);
+            $overlay.on('click', closeMenu);
+        });
+    </script>
+</body>
+
+</html>

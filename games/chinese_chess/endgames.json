@@ -1,0 +1,120 @@
+[
+    {
+        "title": "二鬼拍门",
+        "desc": "双兵借帅力，锁喉必杀。",
+        "setup": [
+            {"r": 0, "c": 4, "color": "b", "type": "k"},
+            {"r": 0, "c": 3, "color": "b", "type": "a"},
+            {"r": 0, "c": 5, "color": "b", "type": "a"},
+            {"r": 1, "c": 3, "color": "r", "type": "s"},
+            {"r": 1, "c": 5, "color": "r", "type": "s"},
+            {"r": 9, "c": 4, "color": "r", "type": "k"}
+        ]
+    },
+    {
+        "title": "双车错",
+        "desc": "双车交替将军，势如破竹。",
+        "setup": [
+            {"r": 0, "c": 4, "color": "b", "type": "k"},
+            {"r": 0, "c": 3, "color": "b", "type": "a"},
+            {"r": 0, "c": 5, "color": "b", "type": "a"},
+            {"r": 0, "c": 8, "color": "r", "type": "c"},
+            {"r": 1, "c": 7, "color": "r", "type": "c"},
+            {"r": 9, "c": 4, "color": "r", "type": "k"}
+        ]
+    },
+    {
+        "title": "马后炮",
+        "desc": "马控将门，炮在后发威。",
+        "setup": [
+            {"r": 0, "c": 4, "color": "b", "type": "k"},
+            {"r": 0, "c": 3, "color": "b", "type": "a"},
+            {"r": 2, "c": 6, "color": "r", "type": "h"},
+            {"r": 1, "c": 6, "color": "r", "type": "p"},
+            {"r": 9, "c": 4, "color": "r", "type": "k"}
+        ]
+    },
+    {
+        "title": "重炮杀",
+        "desc": "双炮重叠，无坚不摧。",
+        "setup": [
+            {"r": 0, "c": 4, "color": "b", "type": "k"},
+            {"r": 0, "c": 3, "color": "b", "type": "a"},
+            {"r": 0, "c": 5, "color": "b", "type": "a"},
+            {"r": 2, "c": 4, "color": "r", "type": "p"},
+            {"r": 4, "c": 4, "color": "r", "type": "p"},
+            {"r": 1, "c": 8, "color": "r", "type": "c"},
+            {"r": 9, "c": 4, "color": "r", "type": "k"}
+        ]
+    },
+    {
+        "title": "铁门栓",
+        "desc": "中炮镇头，车锁咽喉。",
+        "setup": [
+            {"r": 0, "c": 4, "color": "b", "type": "k"},
+            {"r": 0, "c": 3, "color": "b", "type": "a"},
+            {"r": 0, "c": 5, "color": "b", "type": "a"},
+            {"r": 2, "c": 4, "color": "r", "type": "p"},
+            {"r": 0, "c": 8, "color": "r", "type": "c"},
+            {"r": 9, "c": 4, "color": "r", "type": "k"}
+        ]
+    },
+    {
+        "title": "大胆穿心",
+        "desc": "弃车砍士，直捣黄龙。",
+        "setup": [
+            {"r": 0, "c": 4, "color": "b", "type": "k"},
+            {"r": 0, "c": 3, "color": "b", "type": "a"},
+            {"r": 1, "c": 4, "color": "b", "type": "a"},
+            {"r": 1, "c": 6, "color": "r", "type": "c"},
+            {"r": 3, "c": 4, "color": "r", "type": "p"},
+            {"r": 9, "c": 4, "color": "r", "type": "k"}
+        ]
+    },
+    {
+        "title": "立马车",
+        "desc": "马卧槽，车控线。",
+        "setup": [
+            {"r": 0, "c": 4, "color": "b", "type": "k"},
+            {"r": 0, "c": 3, "color": "b", "type": "a"},
+            {"r": 0, "c": 7, "color": "r", "type": "c"},
+            {"r": 2, "c": 6, "color": "r", "type": "h"},
+            {"r": 9, "c": 4, "color": "r", "type": "k"}
+        ]
+    },
+    {
+        "title": "七星聚会(简)",
+        "desc": "简化版，体验兵卒的威力。",
+        "setup": [
+            {"r": 0, "c": 4, "color": "b", "type": "k"},
+            {"r": 1, "c": 3, "color": "b", "type": "s"},
+            {"r": 1, "c": 5, "color": "b", "type": "s"},
+            {"r": 3, "c": 3, "color": "r", "type": "s"},
+            {"r": 3, "c": 5, "color": "r", "type": "s"},
+            {"r": 2, "c": 4, "color": "r", "type": "c"},
+            {"r": 9, "c": 4, "color": "r", "type": "k"}
+        ]
+    },
+    {
+        "title": "野马操田(局)",
+        "desc": "车马斗法，步步惊心。",
+        "setup": [
+            {"r": 0, "c": 4, "color": "b", "type": "k"},
+            {"r": 0, "c": 2, "color": "b", "type": "c"},
+            {"r": 2, "c": 2, "color": "r", "type": "c"},
+            {"r": 3, "c": 4, "color": "r", "type": "h"},
+            {"r": 9, "c": 4, "color": "r", "type": "k"}
+        ]
+    },
+    {
+        "title": "海底捞月",
+        "desc": "车炮沉底，巧胜单车。",
+        "setup": [
+            {"r": 0, "c": 4, "color": "b", "type": "k"},
+            {"r": 0, "c": 3, "color": "b", "type": "c"},
+            {"r": 2, "c": 4, "color": "r", "type": "p"},
+            {"r": 0, "c": 8, "color": "r", "type": "c"},
+            {"r": 9, "c": 4, "color": "r", "type": "k"}
+        ]
+    }
+]

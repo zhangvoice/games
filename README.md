@@ -22,9 +22,20 @@ jungle/
 ## 游戏目录
 
 ```
-- **catan** – 卡坦岛
-- **quoridor** – 路墙棋
-- **jungle** – 斗兽棋
+- **catan** – 卡坦岛 Catan
+- **quoridor** – 路墙棋 Quoridor
+- **jungle** – 斗兽棋 Jungle
+- **abracadawhat** – 出包魔法师 Abraca... What?
+- **bombcat** – 炸弹猫 Bomb Cat
+- **chinese_chess** – 中国象棋 Chinese Chess
+- **coda** – 达芬奇密码
+- **gomoku** – 五子棋 Gomoku
+- **memory** – 记忆大师
+- **monopoly** – 大富翁 Monopoly
+- **reversi** – 黑白棋 Reversi
+- **rummikub** – 拉密 (Rummikub)
+- **smart_block** – 机智方块 Smart Block
+- **tictactoe** – 井字棋
 ```
 
 ## 🙏 致谢

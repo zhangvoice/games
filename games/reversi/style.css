@@ -1,0 +1,463 @@
+:root {
+    /* Use Tailwind colors mainly, but define board specifics */
+    --board-color: #27ae60;
+    --board-border: #1e8449;
+    --cell-border: rgba(0, 0, 0, 0.1);
+    --black-piece: #222;
+    --white-piece: #eee;
+    --accent: #f97316; /* Orange-500 matching Coda */
+}
+
+* {
+    box-sizing: border-box;
+    /* user-select: none;  Removed to allow text selection if needed, specific elements can have it */
+}
+
+.reversi-wrapper {
+    /* Removed custom layout to use Tailwind flex structure */
+    width: 100%;
+}
+
+.game-container {
+    /* Removed custom background/blur to match Coda's clean style */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+/* 计分板 - Modified to fit top bar style or sidebar */
+.score-board {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.player-score {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 24px;
+    background: white;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0; /* slate-200 */
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.player-score.active {
+    border-color: var(--accent);
+    background: #fff7ed; /* orange-50 */
+    transform: scale(1.05);
+    box-shadow: 0 4px 6px rgba(249, 115, 22, 0.2);
+}
+
+.disc-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.disc-icon.black {
+    background: radial-gradient(circle at 30% 30%, #444, #000);
+}
+
+.disc-icon.white {
+    background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+}
+
+.name { font-size: 0.85em; color: #64748b; font-weight: bold; }
+.score { font-size: 1.5em; font-weight: 800; color: #1e293b; line-height: 1; }
+
+/* 棋盘 */
+.board-wrapper {
+    background: #1e293b; /* slate-800 */
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 360px; /* Reduced slightly for better fit */
+    height: 360px;
+    background-color: var(--board-color);
+    border: 2px solid #0f172a; /* slate-900 */
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+}
+
+@media (min-width: 640px) {
+    .board {
+        width: 480px;
+        height: 480px;
+    }
+}
+
+.cell {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Wood texture/lines effect */
+.cell::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+}
+
+/* 有效移动指示器 */
+.cell.valid-move::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.cell.valid-move:hover::after {
+    transform: scale(1.5);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* 最后一步标记 - 红色边框环 */
+.cell.last-move .disc::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    border: 3px solid #e74c3c; /* 红色边框 */
+    border-radius: 50%;
+    box-sizing: border-box;
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
+    z-index: 10;
+    animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+    0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+    70% { box-shadow: 0 0 0 6px rgba(231, 76, 60, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+}
+
+/* 棋子 */
+.disc {
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+    position: absolute;
+    transform: scale(0);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.disc.show {
+    transform: scale(1);
+}
+
+.disc.black {
+    background: radial-gradient(circle at 35% 35%, #666, #111);
+}
+
+.disc.white {
+    background: radial-gradient(circle at 35% 35%, #fff, #ddd);
+}
+
+/* 翻转动画 */
+.disc.flipping {
+    animation: flip-disc 0.4s ease forwards;
+}
+
+@keyframes flip-disc {
+    0% { transform: scale(1) rotateY(0); }
+    50% { transform: scale(0.1) rotateY(90deg); }
+    100% { transform: scale(1) rotateY(0); }
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.settings-panel {
+    background: #f8fafc; /* slate-50 */
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    width: 100%;
+    max-width: 480px;
+}
+
+.setting-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.label {
+    font-weight: bold;
+    color: #475569;
+    font-size: 0.9em;
+}
+
+.toggle-group {
+    display: flex;
+    background: #e2e8f0;
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.toggle-btn {
+    padding: 6px 16px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+    font-size: 0.9em;
+}
+
+.toggle-btn.active {
+    background: white;
+    color: #0f172a;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.toggle-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Hide color setting in PvP */
+#color-setting.hidden {
+    display: none;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #f97316; /* orange-500 */
+    color: white;
+    box-shadow: 0 2px 4px rgba(249, 115, 22, 0.2);
+}
+
+.btn:hover {
+    background: #ea580c; /* orange-600 */
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn.secondary {
+    background: white;
+    color: #64748b;
+    border: 1px solid #cbd5e1;
+    box-shadow: none;
+}
+
+.btn.secondary:hover {
+    background: #f1f5f9;
+    color: #334155;
+    border-color: #94a3b8;
+}
+
+.btn:disabled {
+    background: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.status {
+    font-weight: bold;
+    color: #64748b;
+    margin-top: 8px;
+    padding: 8px 16px;
+    background: #f1f5f9;
+    border-radius: 20px;
+    font-size: 0.9em;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.5); /* slate-900/50 */
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    text-align: center;
+    animation: modal-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modal-pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.modal-header h2 {
+    margin-bottom: 24px;
+}
+
+.winner-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.winner-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.winner-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.result-score-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.result-player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.result-player .label {
+    font-size: 0.9em;
+    margin-bottom: 4px;
+}
+
+.result-player .score-val {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.result-player.black .score-val { color: #1e293b; }
+.result-player.white .score-val { color: #64748b; }
+
+.vs-divider {
+    font-weight: bold;
+    color: #94a3b8;
+    font-size: 0.9em;
+}
+
+.score-bar-wrapper {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 32px;
+}
+
+.score-bar-fill {
+    height: 100%;
+    background: #1e293b;
+    transition: width 0.5s ease;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: center;
+}
+
+.btn.primary {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+    background: linear-gradient(to right, var(--accent), #e67e22);
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+}
+
+.btn.primary:hover {
+    background: linear-gradient(to right, #e67e22, #d35400);
+    transform: translateY(-1px);
+}
+
+/* 响应式 */
+@media (max-width: 700px) {
+    .board {
+        width: 480px;
+        height: 480px;
+    }
+}
+
+@media (max-width: 520px) {
+    .board {
+        width: 320px;
+        height: 320px;
+    }
+    .score-board { gap: 10px; }
+    .player-score { padding: 5px 10px; }
+    
+    .settings-panel { padding: 10px; }
+    .setting-group { flex-direction: column; align-items: flex-start; gap: 5px; }
+    .toggle-group { width: 100%; }
+}

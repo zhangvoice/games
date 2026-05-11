@@ -1,0 +1,323 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no, email=no, address=no">
+    <title>井字棋 -  精选桌游在线玩 - 免费无需注册，即刻开启桌游冒险 | 7and5</title>
+    <meta name="description" content="免费在线玩桌游！无需下载、注册，即刻体验《记忆大师》《达芬奇密码》《五子棋》《黑白棋》《拉密》《古诗连词》《井字棋》等精选经典与创新桌游。查找详细规则，开启您的下一场冒险！">
+    <meta name="keywords" content="免费在线桌游,桌游大全,桌游合集,精选桌游,无需下载注册,记忆大师,达芬奇密码,五子棋,黑白棋,拉密数字牌,古诗连词,井字棋,桌游规则">
+    <link rel="canonical" href="http://game.7and5.cn/">
+    <script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/tailwind.min.js"></script>
+    <script src="../../js/lib/peerjs.min.js"></script>
+    <script src="../../js/peer-config.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="style.css">
+
+
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- 导航栏 -->
+    <nav class="hidden md:block bg-white border-b border-slate-200 fixed w-full z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold flex items-center gap-2 text-slate-800">
+                <span class="text-3xl">🎲</span>
+                <span>7and5</span>
+            </a>
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-8 font-medium">
+                <a href="/"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">首页</a>
+                <a href="/library.html"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">桌游库</a>
+                <a href="/online.html"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">在线畅玩</a>
+                <a href="/universal/lobby/index.html"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">游戏大厅</a>
+                <a href="//card.7and5.cn"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">卡牌大师</a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-slate-600 hover:text-orange-500 focus:outline-none p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Drawer -->
+    <div id="mobile-menu-overlay"
+        class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 opacity-0"></div>
+    <div id="mobile-menu-drawer"
+        class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-4 flex justify-end border-b border-slate-100">
+            <button id="close-menu-btn" class="text-slate-600 hover:text-orange-500 focus:outline-none p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+        <div class="flex flex-col p-4 font-medium space-y-2">
+            <a href="/"
+                class="block px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-orange-500 transition-colors">首页</a>
+            <a href="/library.html"
+                class="block px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-orange-500 transition-colors">桌游库</a>
+            <a href="/online.html"
+                class="block px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-orange-500 transition-colors">在线畅玩</a>
+        </div>
+    </div>
+        <!-- Mobile App Header -->
+    <header
+        class="md:hidden bg-white border-b border-slate-200 fixed top-0 w-full z-50 h-14 flex items-center px-4 shadow-sm">
+        <a href="/online.html"
+            class="flex items-center justify-center w-10 h-10 -ml-2 text-slate-500 hover:text-orange-500 transition-colors rounded-full active:bg-slate-100">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+        </a>
+        <h1 class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-bold text-slate-800">井字棋</h1>
+    </header>
+        
+<main class="container mx-auto px-4 pt-20 md:pt-32 pb-20 flex-grow flex flex-col items-center justify-center">
+    <!-- Lobby Section -->
+    <div id="lobby" class="max-w-md mx-auto w-full transition-all duration-300">
+        <div class="hidden md:block w-full mb-4">
+            <a href="/online.html"
+                class="inline-flex items-center text-slate-500 hover:text-orange-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-5 h-5 mr-1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                返回
+            </a>
+        </div>
+
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-6">
+            <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">井字棋</h2>
+
+            <div id="create-room-section" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="btn-pve"
+                        class="bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-900 transition-all transform hover:scale-[1.02]">
+                        人机对战
+                    </button>
+                    <button id="btn-pvp"
+                        class="bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all transform hover:scale-[1.02]">
+                        双人对战
+                    </button>
+                </div>
+
+                <button id="btn-create"
+                    class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold hover:bg-orange-600 transition-all transform hover:scale-[1.02]">
+                    创建联机房间
+                </button>
+
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-slate-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm"><span
+                            class="px-2 bg-white text-slate-500">或者</span></div>
+                </div>
+
+                <div class="flex gap-2">
+                    <input type="text" id="room-id-input" placeholder="输入房间 ID"
+                        class="flex-grow px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800">
+                    <button id="btn-join"
+                        class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-900 transition-colors whitespace-nowrap">
+                        加入
+                    </button>
+                </div>
+            </div>
+
+            <!-- Waiting for opponent (Hidden by default) -->
+            <div id="waiting-section" class="hidden space-y-6 text-center">
+                <div class="animate-spin text-4xl mx-auto">⏳</div>
+                <p class="text-slate-600">等待对手加入...</p>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <p class="text-xs text-slate-400 mb-2 uppercase font-bold">房间链接</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="share-url" readonly
+                            class="flex-grow bg-white border border-slate-200 px-3 py-1 rounded text-sm text-slate-600">
+                        <button id="btn-copy" disabled
+                            class="text-slate-300 font-medium text-sm cursor-not-allowed">复制</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rules/Tips (Optional, similar to Coda) -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <h3 class="font-bold text-lg mb-3 flex items-center gap-2 text-slate-700">
+                <span class="text-xl">📜</span> 游戏规则
+                <div class="ml-auto flex gap-3">
+                    <a href="/changelog/tictactoe.html"
+                        class="text-slate-400 hover:text-orange-500 transition-colors flex items-center gap-1 text-sm font-medium"
+                        title="更新日志">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>日志</span>
+                    </a>
+                    <a href="/game_feedback/tictactoe.html"
+                        class="text-slate-400 hover:text-orange-500 transition-colors flex items-center gap-1 text-sm font-medium"
+                        title="反馈与建议">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                        </svg>
+                        <span>反馈</span>
+                    </a>
+                </div>
+            </h3>
+            <div class="text-sm text-slate-600 space-y-2 leading-relaxed">
+                <p>• 双方轮流在 3x3 网格上落子。</p>
+                <p>• 率先将三个棋子连成一线（横、竖、斜）者获胜。</p>
+                <p>• 若棋盘填满且无人获胜，则为平局。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Board Section (Hidden by default) -->
+    <div id="game-board" class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md hidden">
+        <!-- Game Controls/Header -->
+        <div class="flex justify-center items-center mb-6">
+            <div id="game-mode-display" class="font-bold text-slate-500 text-sm">双人对战</div>
+        </div>
+
+        <!-- Game Status -->
+        <div id="status-display" class="text-center text-xl font-bold mb-6 text-slate-700 h-8">
+            玩家 X 的回合
+        </div>
+
+        <!-- Game Board -->
+        <div class="grid grid-cols-3 gap-3 mb-6 mx-auto w-fit">
+            <div class="cell w-20 h-20 bg-slate-100 rounded-lg text-4xl font-bold flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors text-slate-800"
+                data-index="0"></div>
+            <div class="cell w-20 h-20 bg-slate-100 rounded-lg text-4xl font-bold flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors text-slate-800"
+                data-index="1"></div>
+            <div class="cell w-20 h-20 bg-slate-100 rounded-lg text-4xl font-bold flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors text-slate-800"
+                data-index="2"></div>
+            <div class="cell w-20 h-20 bg-slate-100 rounded-lg text-4xl font-bold flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors text-slate-800"
+                data-index="3"></div>
+            <div class="cell w-20 h-20 bg-slate-100 rounded-lg text-4xl font-bold flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors text-slate-800"
+                data-index="4"></div>
+            <div class="cell w-20 h-20 bg-slate-100 rounded-lg text-4xl font-bold flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors text-slate-800"
+                data-index="5"></div>
+            <div class="cell w-20 h-20 bg-slate-100 rounded-lg text-4xl font-bold flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors text-slate-800"
+                data-index="6"></div>
+            <div class="cell w-20 h-20 bg-slate-100 rounded-lg text-4xl font-bold flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors text-slate-800"
+                data-index="7"></div>
+            <div class="cell w-20 h-20 bg-slate-100 rounded-lg text-4xl font-bold flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors text-slate-800"
+                data-index="8"></div>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="flex gap-3">
+            <button id="restart-btn"
+                class="flex-1 py-3 bg-slate-800 text-white rounded-lg font-bold hover:bg-slate-700 transition-colors">
+                重新开始
+            </button>
+            <button id="btn-exit"
+                class="flex-1 py-3 bg-slate-200 text-slate-700 rounded-lg font-bold hover:bg-slate-300 transition-colors">
+                退出
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="modal-overlay"
+        class="fixed inset-0 bg-slate-900/50 flex items-center justify-center z-50 hidden backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-2xl shadow-xl max-w-sm w-full mx-4 transform transition-all scale-100">
+            <div class="text-center mb-6">
+                <div id="winner-icon" class="text-6xl mb-4">🏆</div>
+                <h2 id="winner-title" class="text-2xl font-bold text-slate-900">黑方获胜!</h2>
+            </div>
+
+            <div class="space-y-3">
+                <button id="modal-restart-btn"
+                    class="w-full py-3 bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30">
+                    再来一局
+                </button>
+                <button id="modal-exit-btn"
+                    class="w-full py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors">
+                    退出房间
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+    <!-- Footer -->
+    <footer id="game-footer" class="bg-slate-50 py-12 border-t border-slate-200">
+        <div class="container mx-auto px-4">
+            <div class="md:flex md:justify-between md:items-center">
+                <div class="text-center md:text-left mb-8 md:mb-0">
+                    <div class="text-2xl font-bold flex items-center justify-center md:justify-start gap-2 mb-4 text-slate-800">
+                        <span>🎲</span>
+                        <span>7and5 的桌游世界</span>
+                    </div>
+                    <p class="text-slate-500 text-sm">&copy; 2026 7and5. All rights reserved.</p>
+                </div>
+                <div class="text-center md:text-right">
+                    <div class="flex justify-center md:justify-end gap-6 text-sm font-medium text-slate-600">
+                        <a href="/sitemap.html" class="hover:text-orange-500 transition-colors">网站地图</a>
+                        <a href="/feedback.html" class="hover:text-orange-500 transition-colors">问题反馈</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!--页面js-->
+    
+<script src="dist/bundle.js?v=20260409"></script>
+
+   <script>
+        $(document).ready(function () {
+            const $btn = $('#mobile-menu-btn');
+            const $closeBtn = $('#close-menu-btn');
+            const $drawer = $('#mobile-menu-drawer');
+            const $overlay = $('#mobile-menu-overlay');
+
+            function openMenu() {
+                $overlay.removeClass('hidden');
+                // Force reflow
+                $overlay[0].offsetHeight;
+                $overlay.removeClass('opacity-0');
+                $drawer.removeClass('translate-x-full');
+                $('body').addClass('overflow-hidden');
+            }
+
+            function closeMenu() {
+                $overlay.addClass('opacity-0');
+                $drawer.addClass('translate-x-full');
+                setTimeout(() => {
+                    $overlay.addClass('hidden');
+                    $('body').removeClass('overflow-hidden');
+                }, 300);
+            }
+
+            $btn.on('click', openMenu);
+            $closeBtn.on('click', closeMenu);
+            $overlay.on('click', closeMenu);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,68 @@
+.card {
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            z-index: 10;
+        }
+        .card.selected {
+            transform: translateY(-20px);
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.6);
+            border-color: #f97316;
+            z-index: 20;
+            position: relative;
+        }
+        #my-hand {
+            padding-top: 20px; /* 为上浮留出空间 */
+        }
+        .player-active {
+            border: 2px solid #f97316;
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
+        }
+        .animate-explode {
+            animation: explode 0.5s ease-in-out;
+        }
+        @keyframes explode {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        /* Custom scrollbar for card area */
+        .cards-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+        .cards-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .cards-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .cards-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Draw Card Animation */
+        .draw-anim-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            pointer-events: none;
+            animation: popInAndOut 1.5s forwards;
+        }
+        @keyframes popInAndOut {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+            70% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+            100% { transform: translate(-50%, 50%) scale(0.5); opacity: 0; }
+        }

@@ -1,0 +1,477 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no, email=no, address=no">
+    <title>中国象棋 -  精选桌游在线玩 - 免费无需注册，即刻开启桌游冒险 | 7and5</title>
+    <meta name="description" content="免费在线玩桌游！无需下载、注册，即刻体验《记忆大师》《达芬奇密码》《五子棋》《黑白棋》《拉密》《古诗连词》《井字棋》等精选经典与创新桌游。查找详细规则，开启您的下一场冒险！">
+    <meta name="keywords" content="免费在线桌游,桌游大全,桌游合集,精选桌游,无需下载注册,记忆大师,达芬奇密码,五子棋,黑白棋,拉密数字牌,古诗连词,井字棋,桌游规则">
+    <link rel="canonical" href="http://game.7and5.cn/">
+    <script src="../../js/lib/jquery.min.js"></script>
+    <script src="../../js/lib/tailwind.min.js"></script>
+    <script src="../../js/lib/peerjs.min.js"></script>
+    <script src="../../js/peer-config.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="style.css">
+
+
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- 导航栏 -->
+    <nav class="hidden md:block bg-white border-b border-slate-200 fixed w-full z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold flex items-center gap-2 text-slate-800">
+                <span class="text-3xl">🎲</span>
+                <span>7and5</span>
+            </a>
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex space-x-8 font-medium">
+                <a href="/"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">首页</a>
+                <a href="/library.html"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">桌游库</a>
+                <a href="/online.html"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">在线畅玩</a>
+                <a href="/universal/lobby/index.html"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">游戏大厅</a>
+                <a href="//card.7and5.cn"
+                    class="text-slate-600 hover:text-orange-500 transition-colors">卡牌大师</a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-btn" class="md:hidden text-slate-600 hover:text-orange-500 focus:outline-none p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Drawer -->
+    <div id="mobile-menu-overlay"
+        class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300 opacity-0"></div>
+    <div id="mobile-menu-drawer"
+        class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-4 flex justify-end border-b border-slate-100">
+            <button id="close-menu-btn" class="text-slate-600 hover:text-orange-500 focus:outline-none p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+        <div class="flex flex-col p-4 font-medium space-y-2">
+            <a href="/"
+                class="block px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-orange-500 transition-colors">首页</a>
+            <a href="/library.html"
+                class="block px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-orange-500 transition-colors">桌游库</a>
+            <a href="/online.html"
+                class="block px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-orange-500 transition-colors">在线畅玩</a>
+        </div>
+    </div>
+        <!-- Mobile App Header -->
+    <header
+        class="md:hidden bg-white border-b border-slate-200 fixed top-0 w-full z-50 h-14 flex items-center px-4 shadow-sm">
+        <a href="/online.html"
+            class="flex items-center justify-center w-10 h-10 -ml-2 text-slate-500 hover:text-orange-500 transition-colors rounded-full active:bg-slate-100">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
+                class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+        </a>
+        <h1 class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-lg font-bold text-slate-800">中国象棋</h1>
+    </header>
+        
+<main class="container mx-auto px-4 pt-20 md:pt-28 pb-10 flex-grow flex flex-col items-center">
+
+    <!-- 大厅区域 -->
+    <div id="lobby" class="max-w-md mx-auto w-full transition-all duration-300">
+        <div id="lobby-menu" class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 mb-6 relative">
+            <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">中国象棋 Chinese Chess</h2>
+
+            <div id="create-room-section" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="btn-ai"
+                        class="bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-900 transition-all transform hover:scale-[1.02]">
+                        人机对战
+                    </button>
+                    <button id="btn-pvp"
+                        class="bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition-all transform hover:scale-[1.02]">
+                        双人对战
+                    </button>
+                </div>
+
+                <button id="btn-endgame"
+                    class="w-full bg-amber-600 text-white py-3 rounded-xl font-bold hover:bg-amber-700 transition-all transform hover:scale-[1.02]">
+                    残局挑战
+                </button>
+
+                <button id="btn-create"
+                    class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold hover:bg-orange-600 transition-all transform hover:scale-[1.02]">
+                    创建联机房间
+                </button>
+
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-slate-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm"><span
+                            class="px-2 bg-white text-slate-500">或者</span></div>
+                </div>
+
+                <div class="flex gap-2">
+                    <input type="text" id="room-id-input" placeholder="输入房间ID加入"
+                        class="flex-grow px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-slate-800">
+                    <button id="btn-join"
+                        class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-900 transition-colors whitespace-nowrap flex items-center gap-2">
+                        <span>加入</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="waiting-section" class="hidden space-y-6 text-center">
+                <div class="animate-spin text-4xl mx-auto">⏳</div>
+                <p id="waiting-text" class="text-slate-600">正在创建房间...</p>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
+                    <p class="text-xs text-slate-400 mb-2 uppercase font-bold">房间链接</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="share-url" readonly
+                            class="flex-grow bg-white border border-slate-200 px-3 py-1 rounded text-sm text-slate-600">
+                        <button id="btn-copy" disabled
+                            class="text-slate-300 font-medium text-sm cursor-not-allowed">复制</button>
+                    </div>
+                </div>
+                <button id="btn-cancel-wait" class="text-slate-500 hover:text-slate-700 text-sm underline">取消等待</button>
+            </div>
+        </div>
+
+        <!-- 游戏规则区域 -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6">
+            <h3 class="font-bold text-lg mb-3 flex items-center gap-2 text-slate-700">
+                <span class="text-xl">📜</span> 游戏规则
+                <div class="ml-auto flex gap-3">
+                    <a href="/changelog/chinese_chess.html"
+                        class="text-slate-400 hover:text-orange-500 transition-colors flex items-center gap-1 text-sm font-medium"
+                        title="更新日志">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>日志</span>
+                    </a>
+                    <a href="/game_feedback/chinese_chess.html"
+                        class="text-slate-400 hover:text-orange-500 transition-colors flex items-center gap-1 text-sm font-medium"
+                        title="反馈与建议">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                        </svg>
+                        <span>反馈</span>
+                    </a>
+                </div>
+            </h3>
+            <div class="text-sm text-slate-600 space-y-2 leading-relaxed h-48 overflow-y-auto">
+                <p>1. <span class="font-bold text-slate-800">目标：</span>将死对方的"帅"（或"将"）。</p>
+                <p>2. <span class="font-bold text-slate-800">帅/将：</span>只能在九宫内走动，每步一格，不能照面。</p>
+                <p>3. <span class="font-bold text-slate-800">士：</span>只能在九宫内斜走，每步一格。</p>
+                <p>4. <span class="font-bold text-slate-800">象/相：</span>走"田"字，不能过河，"田"字中心有子不能走（塞象眼）。</p>
+                <p>5. <span class="font-bold text-slate-800">马：</span>走"日"字，马腿有子不能走（别马腿）。</p>
+                <p>6. <span class="font-bold text-slate-800">车：</span>直线走，无阻挡可走任意格。</p>
+                <p>7. <span class="font-bold text-slate-800">炮：</span>走法同车，吃子需隔一个棋子（炮打隔山）。</p>
+                <p>8. <span class="font-bold text-slate-800">兵/卒：</span>过河前只能向前，过河后可向前或左右，每次一格，不能后退。</p>
+            </div>
+        </div>
+
+        <!-- 残局选择列表 (默认隐藏) -->
+        <div id="endgame-list"
+            class="hidden bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-xl border border-amber-200">
+            <h3 class="font-bold text-lg mb-4 flex items-center gap-2 text-slate-800">
+                <span>🧩</span> 选择残局
+            </h3>
+            <div class="grid grid-cols-2 gap-3" id="endgame-grid">
+                <!-- 动态生成 -->
+            </div>
+            <button id="btn-back-lobby"
+                class="mt-4 w-full py-2 text-slate-500 hover:text-slate-800 transition-colors">返回大厅</button>
+        </div>
+    </div>
+
+    <!-- 游戏区域 -->
+    <div id="game-area" class="hidden w-full max-w-4xl flex flex-col md:flex-row gap-6 items-start justify-center">
+
+        <!-- 左侧：棋盘 -->
+        <div class="relative select-none">
+            <!-- 棋盘容器 -->
+            <div id="board-container"
+                class="relative bg-[#e6b380] rounded-lg shadow-2xl p-1 md:p-2 border-4 border-[#8c5e2e]">
+                <!-- 棋盘网格 SVG -->
+                <svg id="board-svg" viewBox="0 0 450 500" class="w-full h-full block bg-[#e6b380]">
+                    <defs>
+                        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#8c5e2e" stroke-width="2" />
+                        </pattern>
+                    </defs>
+                    <!-- 边框 -->
+                    <rect x="25" y="25" width="400" height="450" fill="none" stroke="#8c5e2e" stroke-width="4" />
+                    <!-- 横线 -->
+                    <path
+                        d="M25 25 H425 M25 75 H425 M25 125 H425 M25 175 H425 M25 225 H425 M25 275 H425 M25 325 H425 M25 375 H425 M25 425 H425 M25 475 H425"
+                        stroke="#8c5e2e" stroke-width="2" />
+                    <!-- 竖线 -->
+                    <path
+                        d="M25 25 V225 M75 25 V225 M125 25 V225 M175 25 V225 M225 25 V225 M275 25 V225 M325 25 V225 M375 25 V225 M425 25 V225"
+                        stroke="#8c5e2e" stroke-width="2" />
+                    <path
+                        d="M25 275 V475 M75 275 V475 M125 275 V475 M175 275 V475 M225 275 V475 M275 275 V475 M325 275 V475 M375 275 V475 M425 275 V475"
+                        stroke="#8c5e2e" stroke-width="2" />
+                    <!-- 斜线 (九宫) -->
+                    <path d="M175 25 L275 125 M275 25 L175 125" stroke="#8c5e2e" stroke-width="2" />
+                    <path d="M175 375 L275 475 M275 375 L175 475" stroke="#8c5e2e" stroke-width="2" />
+                    <!-- 炮兵位置标记 -->
+                    <g class="markers" stroke="#8c5e2e" stroke-width="2" fill="none">
+                        <!-- 炮位 -->
+                        <path
+                            d="M65 115 L70 115 L70 100 M80 115 L75 115 L75 100 M65 135 L70 135 L70 150 M80 135 L75 135 L75 150"
+                            transform="translate(0,0)" />
+                        <path
+                            d="M365 115 L370 115 L370 100 M380 115 L375 115 L375 100 M365 135 L370 135 L370 150 M380 135 L375 135 L375 150"
+                            transform="translate(0,0)" />
+                        <path
+                            d="M65 365 L70 365 L70 350 M80 365 L75 365 L75 350 M65 385 L70 385 L70 400 M80 385 L75 385 L75 400"
+                            transform="translate(0,0)" />
+                        <path
+                            d="M365 365 L370 365 L370 350 M380 365 L375 365 L375 350 M365 385 L370 385 L370 400 M380 385 L375 385 L375 400"
+                            transform="translate(0,0)" />
+                        <!-- 兵位 -->
+                        <path
+                            d="M15 165 L20 165 L20 150 M30 165 L25 165 L25 150 M15 185 L20 185 L20 200 M30 185 L25 185 L25 200"
+                            transform="translate(0,0)" />
+                        <path
+                            d="M115 165 L120 165 L120 150 M130 165 L125 165 L125 150 M115 185 L120 185 L120 200 M130 185 L125 185 L125 200"
+                            transform="translate(0,0)" />
+                        <path
+                            d="M215 165 L220 165 L220 150 M230 165 L225 165 L225 150 M215 185 L220 185 L220 200 M230 185 L225 185 L225 200"
+                            transform="translate(0,0)" />
+                        <path
+                            d="M315 165 L320 165 L320 150 M330 165 L325 165 L325 150 M315 185 L320 185 L320 200 M330 185 L325 185 L325 200"
+                            transform="translate(0,0)" />
+                        <path
+                            d="M415 165 L420 165 L420 150 M430 165 L425 165 L425 150 M415 185 L420 185 L420 200 M430 185 L425 185 L425 200"
+                            transform="translate(0,0)" />
+
+                        <path
+                            d="M15 315 L20 315 L20 300 M30 315 L25 315 L25 300 M15 335 L20 335 L20 350 M30 335 L25 335 L25 350"
+                            transform="translate(0,0)" />
+                        <path
+                            d="M115 315 L120 315 L120 300 M130 315 L125 315 L125 300 M115 335 L120 335 L120 350 M130 335 L125 335 L125 350"
+                            transform="translate(0,0)" />
+                        <path
+                            d="M215 315 L220 315 L220 300 M230 315 L225 315 L225 300 M215 335 L220 335 L220 350 M230 335 L225 335 L225 350"
+                            transform="translate(0,0)" />
+                        <path
+                            d="M315 315 L320 315 L320 300 M330 315 L325 315 L325 300 M315 335 L320 335 L320 350 M330 335 L325 335 L325 350"
+                            transform="translate(0,0)" />
+                        <path
+                            d="M415 315 L420 315 L420 300 M430 315 L425 315 L425 300 M415 335 L420 335 L420 350 M430 335 L425 335 L425 350"
+                            transform="translate(0,0)" />
+                    </g>
+                    <!-- 楚河汉界 -->
+                    <text x="110" y="260" font-family="KaiTi, serif" font-size="30" fill="#8c5e2e" font-weight="bold">楚
+                        河</text>
+                    <text x="290" y="260" font-family="KaiTi, serif" font-size="30" fill="#8c5e2e" font-weight="bold">汉
+                        界</text>
+                </svg>
+
+                <!-- 棋子层 -->
+                <div id="pieces-layer"
+                    class="absolute inset-0 top-[1px] left-[1px] md:top-[2px] md:left-[2px] right-[1px] bottom-[1px] pointer-events-none">
+                    <!-- 棋子将通过 JS 动态添加 -->
+                </div>
+
+                <!-- 交互层 (处理点击) -->
+                <div id="interaction-layer" class="absolute inset-0 z-10 grid grid-cols-9 grid-rows-10 cursor-pointer">
+                    <!-- 格子将通过 JS 动态生成 -->
+                </div>
+
+                <!-- 动画效果层 -->
+                <div id="effects-layer" class="absolute inset-0 pointer-events-none z-20"></div>
+
+                <!-- 游戏结束/消息覆盖层 -->
+                <div id="message-overlay"
+                    class="hidden absolute inset-0 bg-black/50 z-30 flex items-center justify-center backdrop-blur-sm rounded-lg">
+                    <div class="bg-white p-6 rounded-2xl shadow-2xl text-center transform scale-110">
+                        <h3 id="message-title" class="text-3xl font-bold mb-2 text-slate-800">游戏结束</h3>
+                        <p id="message-desc" class="text-slate-600 mb-6">红方获胜！</p>
+                        <div class="flex gap-3 justify-center">
+                            <button id="btn-restart"
+                                class="bg-orange-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-orange-700 transition-colors">再来一局</button>
+                            <button id="btn-quit"
+                                class="bg-slate-200 text-slate-700 px-6 py-2 rounded-lg font-bold hover:bg-slate-300 transition-colors">退出</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：状态面板 -->
+        <div class="w-full md:w-80 space-y-4">
+            <!-- 玩家信息 -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col gap-4">
+                <div id="player-top" class="flex items-center gap-3 p-3 rounded-lg transition-colors">
+                    <div
+                        class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-xl shadow-inner border border-slate-300">
+                        👤</div>
+                    <div class="flex-grow">
+                        <div class="font-bold text-slate-800 flex justify-between">
+                            <span id="name-top">黑方 (电脑)</span>
+                            <span id="timer-top" class="font-mono text-slate-500">00:00</span>
+                        </div>
+                        <div class="text-xs text-slate-500">执黑后手</div>
+                    </div>
+                </div>
+
+                <div class="relative h-8 flex items-center justify-center">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-slate-100"></div>
+                    </div>
+                    <div id="turn-indicator"
+                        class="relative px-4 py-1 bg-slate-100 text-slate-500 rounded-full text-xs font-bold border border-slate-200 transition-all duration-300">
+                        等待开始
+                    </div>
+                </div>
+
+                <div id="player-bottom"
+                    class="flex items-center gap-3 p-3 rounded-lg bg-orange-50 border border-orange-200 shadow-sm">
+                    <div
+                        class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-xl shadow-inner border border-orange-200">
+                        👤</div>
+                    <div class="flex-grow">
+                        <div class="font-bold text-slate-800 flex justify-between">
+                            <span id="name-bottom">我</span>
+                            <span id="timer-bottom" class="font-mono text-orange-600">00:00</span>
+                        </div>
+                        <div class="text-xs text-slate-500">执红先手</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 游戏控制 -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 grid grid-cols-2 gap-3">
+                <button id="btn-undo"
+                    class="bg-slate-100 text-slate-700 py-3 rounded-lg font-bold hover:bg-slate-200 transition-colors flex items-center justify-center gap-2">
+                    <span>↩️</span> 悔棋
+                </button>
+                <button id="btn-giveup"
+                    class="bg-red-50 text-red-600 py-3 rounded-lg font-bold hover:bg-red-100 transition-colors flex items-center justify-center gap-2">
+                    <span>🏳️</span> 认输
+                </button>
+                <button id="btn-sound"
+                    class="col-span-2 bg-slate-100 text-slate-700 py-2 rounded-lg font-medium hover:bg-slate-200 transition-colors text-sm">
+                    🔊 声音: 开
+                </button>
+            </div>
+
+            <!-- 历史记录 -->
+            <div
+                class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex-grow max-h-60 overflow-hidden flex flex-col">
+                <h3 class="font-bold text-sm text-slate-500 mb-2 uppercase tracking-wider">对局记录</h3>
+                <div id="move-history"
+                    class="overflow-y-auto flex-grow text-sm space-y-1 font-mono text-slate-600 pr-2">
+                    <!-- 记录条目 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Toast 通知容器 -->
+<div id="toast-container"
+    class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<!-- 重新连接等待遮罩 -->
+<div id="reconnect-overlay"
+    class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center backdrop-blur-sm">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm mx-4">
+        <div class="text-5xl mb-4 animate-bounce">📡</div>
+        <h3 class="text-xl font-bold mb-2 text-slate-800">连接中断</h3>
+        <p class="text-slate-600 mb-6">对方已掉线，正在等待重连...</p>
+        <div class="animate-pulse flex justify-center gap-1 mb-6">
+            <div class="w-2 h-2 bg-orange-500 rounded-full"></div>
+            <div class="w-2 h-2 bg-orange-500 rounded-full animation-delay-200"></div>
+            <div class="w-2 h-2 bg-orange-500 rounded-full animation-delay-400"></div>
+        </div>
+        <button id="btn-force-quit" class="text-slate-400 hover:text-red-500 text-sm underline transition-colors">
+            退出游戏
+        </button>
+    </div>
+</div>
+
+
+    <!-- Footer -->
+    <footer id="game-footer" class="bg-slate-50 py-12 border-t border-slate-200">
+        <div class="container mx-auto px-4">
+            <div class="md:flex md:justify-between md:items-center">
+                <div class="text-center md:text-left mb-8 md:mb-0">
+                    <div class="text-2xl font-bold flex items-center justify-center md:justify-start gap-2 mb-4 text-slate-800">
+                        <span>🎲</span>
+                        <span>7and5 的桌游世界</span>
+                    </div>
+                    <p class="text-slate-500 text-sm">&copy; 2026 7and5. All rights reserved.</p>
+                </div>
+                <div class="text-center md:text-right">
+                    <div class="flex justify-center md:justify-end gap-6 text-sm font-medium text-slate-600">
+                        <a href="/sitemap.html" class="hover:text-orange-500 transition-colors">网站地图</a>
+                        <a href="/feedback.html" class="hover:text-orange-500 transition-colors">问题反馈</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!--页面js-->
+    
+<script src="script.js?v=20260409"></script>
+
+
+   <script>
+        $(document).ready(function () {
+            const $btn = $('#mobile-menu-btn');
+            const $closeBtn = $('#close-menu-btn');
+            const $drawer = $('#mobile-menu-drawer');
+            const $overlay = $('#mobile-menu-overlay');
+
+            function openMenu() {
+                $overlay.removeClass('hidden');
+                // Force reflow
+                $overlay[0].offsetHeight;
+                $overlay.removeClass('opacity-0');
+                $drawer.removeClass('translate-x-full');
+                $('body').addClass('overflow-hidden');
+            }
+
+            function closeMenu() {
+                $overlay.addClass('opacity-0');
+                $drawer.addClass('translate-x-full');
+                setTimeout(() => {
+                    $overlay.addClass('hidden');
+                    $('body').removeClass('overflow-hidden');
+                }, 300);
+            }
+
+            $btn.on('click', openMenu);
+            $closeBtn.on('click', closeMenu);
+            $overlay.on('click', closeMenu);
+        });
+    </script>
+</body>
+
+</html>

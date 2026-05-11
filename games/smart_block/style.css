@@ -1,0 +1,33 @@
+#game-board {
+    touch-action: none; /* 防止触摸设备上的滚动 */
+}
+
+.piece-canvas {
+    transition: transform 0.2s;
+    cursor: grab;
+}
+
+.piece-canvas:active {
+    cursor: grabbing;
+    transform: scale(1.1);
+}
+
+.piece-selected {
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+    border: 2px dashed #3b82f6;
+}
+
+/* 积木容器的滚动条样式 */
+#pieces-container::-webkit-scrollbar {
+    width: 8px;
+}
+#pieces-container::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+#pieces-container::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 4px;
+}
+#pieces-container::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}

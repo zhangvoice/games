@@ -1,0 +1,164 @@
+.tile {
+    perspective: 1000px;
+    width: 60px;
+    height: 90px;
+    transition: all 0.3s ease;
+}
+
+.tile-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+}
+
+.tile.revealed .tile-inner {
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+}
+
+.tile-front,
+.tile-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+/* 牌面（数值） - 默认在背面（旋转180度） */
+.tile-front {
+    background: #f8fafc;
+    color: #1e293b;
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    border: 2px solid #e2e8f0;
+    z-index: 1;
+}
+
+/* 牌背（图案） - 默认在正面 */
+.tile-back {
+    background: #334155;
+    color: white;
+    transform: rotateY(0deg);
+    -webkit-transform: rotateY(0deg);
+    border: 2px solid #475569;
+    z-index: 2;
+}
+
+/* 翻开后，调整 z-index 确保正面在上 */
+.tile.revealed .tile-front {
+    z-index: 2;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.tile.revealed .tile-back {
+    z-index: 1;
+}
+
+/* 被翻开的牌样式：简化为绿色边框 */
+.tile.revealed {
+    transform: translateY(-2px);
+    /* 极轻微浮起 */
+    opacity: 1 !important;
+    z-index: 10 !important;
+}
+
+.tile.revealed .tile-front,
+.tile.revealed .tile-back {
+    border: 2px solid #22c55e !important;
+    /* 调细为 2px */
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+    box-sizing: border-box;
+    /* 确保边框不影响大小 */
+}
+
+.tile.revealed.tile-black .tile-front {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #22c55e !important;
+}
+
+.tile.revealed.tile-white .tile-front {
+    background: #ffffff;
+    color: #0f172a;
+    border-color: #22c55e !important;
+}
+
+/* 统一翻开后的数字大小 */
+.tile.revealed {
+    transform: none;
+}
+
+.tile.revealed .tile-front {
+    font-size: 2.5rem;
+}
+
+/* 刚被猜中时的闪烁动画 */
+@keyframes reveal-pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0px rgba(34, 197, 94, 0.7);
+    }
+
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px 10px rgba(34, 197, 94, 0.4);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0px rgba(34, 197, 94, 0);
+    }
+}
+
+.revealed-new {
+    animation: reveal-pulse 1.5s ease-out infinite;
+    z-index: 10 !important;
+}
+
+.tile-black .tile-back {
+    background: #0f172a;
+    border-color: #1e293b;
+}
+
+.tile-white .tile-back {
+    background: #f1f5f9;
+    color: #64748b;
+    border-color: #cbd5e1;
+}
+
+.tile-black .tile-front {
+    border-color: #0f172a;
+}
+
+.tile-white .tile-front {
+    border-color: #cbd5e1;
+}
+
+.current-turn {
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.4);
+    border-radius: 12px;
+}
+
+/* 刚摸到的牌（待定牌）的高亮样式 - 使用亮橘色框起来 */
+.tile.special {
+    transform: scale(1.05);
+    /* 去掉 translateY(-8px) */
+    z-index: 20;
+}
+
+.tile.special .tile-front,
+.tile.special .tile-back {
+    border: 3px solid #f97316 !important;
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.6);
+}

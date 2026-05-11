@@ -1,0 +1,275 @@
+
+/* Monopoly Board Styling */
+/* #game-area {
+    display: none;
+} */
+
+body {
+    background-color: #f0f4f8;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 3px;
+    width: 100%;
+    max-width: 800px;
+    aspect-ratio: 1 / 1;
+    background-color: #e2e8f0; /* Board background */
+    border: 7px solid #334155;
+    border-radius: 8px;
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.25);
+    box-sizing: border-box;
+    padding: 3px;
+}
+
+.tile {
+    background-color: #fff;
+    border: 1px solid #cbd5e1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    padding: 2px;
+    user-select: none;
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+
+.tile:hover {
+    z-index: 20;
+    transform: scale(1.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.tile-header {
+    width: 100%;
+    height: 25%;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tile-name {
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.6rem;
+    margin-top: 4px;
+    line-height: 1.1;
+    color: #334155;
+    padding: 0 2px;
+    word-break: break-all;
+}
+
+.tile-price {
+    font-size: 0.6rem;
+    margin-bottom: 2px;
+    color: #64748b;
+    font-family: monospace;
+}
+
+/* 地产组颜色 - 更柔和/现代 */
+.color-bar {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.bg-brown { background-color: #92400e; }
+.bg-cyan { background-color: #06b6d4; }
+.bg-pink { background-color: #ec4899; }
+.bg-orange { background-color: #f97316; }
+.bg-red { background-color: #ef4444; }
+.bg-yellow { background-color: #eab308; }
+.bg-green { background-color: #22c55e; }
+.bg-blue { background-color: #3b82f6; }
+
+.center-area {
+    grid-area: 2 / 2 / 7 / 7;
+    background-color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* border: 1px solid #cbd5e1; */
+    border-radius: 4px;
+}
+
+.player-token {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    position: relative; /* 改为 relative，使其受 Grid 控制 */
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 50;
+    margin: auto; /* 居中显示 */
+}
+
+/* 移除之前的 top/left/right/bottom 定位，改为 transform 偏移 */
+.token-p0 { transform: translate(-8px, -8px); }
+.token-p1 { transform: translate(8px, -8px); }
+.token-p2 { transform: translate(-8px, 8px); }
+.token-p3 { transform: translate(8px, 8px); }
+
+/* Ownership markers - improved */
+.owner-marker {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Modal animation */
+@keyframes bounceIn {
+    0% { transform: scale(0.1); opacity: 0; }
+    60% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+}
+.animate-bounce-in {
+    animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.rotate-label {
+    transform: rotate(-45deg);
+    font-family: 'Times New Roman', serif;
+    letter-spacing: 4px;
+    color: #cbd5e1; /* Subtle text */
+    text-shadow: 1px 1px 0px #fff;
+    font-size: 3rem;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* 玩家列表的自定义滚动条 */
+#players-container::-webkit-scrollbar {
+    width: 6px;
+}
+#players-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+#players-container::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 20px;
+}
+
+/* 修复移动端的棋盘容器 */
+@media (max-width: 768px) {
+    /* 仅当游戏区域可见时应用 flex 布局 */
+    #game-area:not(.hidden) {
+        display: flex;
+        flex-direction: column; /* 棋盘在上方，控制面板在下方 */
+    }
+
+    /* 地图容器 (棋盘) 占据剩余空间 */
+    .w-full.md\:w-3\/4 { 
+        order: 1; /* 第一位 */
+        height: auto;
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+        overflow: hidden; /* 防止溢出 */
+    }
+
+    /* 玩家列表和控制容器 */
+    .w-full.md\:w-1\/4 {
+        order: 2; /* 第二位 */
+        height: auto;
+        /* max-height: 40vh;  移除限制以允许内容流动 */
+        flex-shrink: 0;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        background: white;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    #players-container {
+        display: flex;
+        flex-direction: row; /* Horizontal scroll */
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 8px;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        min-height: 80px;
+    }
+    
+    #players-container > div {
+        min-width: 140px;
+        flex: 1; /* 让所有卡片平分空间 */
+        flex-shrink: 0;
+        /* 保持一致的高度 */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        /* 修复上浮问题 */
+        margin-top: 0 !important; 
+        transform: none !important;
+    }
+
+    #controls {
+        border-top: 1px solid #e2e8f0;
+        padding-top: 8px;
+    }
+
+    /* Hide player list title on mobile to save space */
+    .w-full.md\:w-1\/4 h3 {
+        display: none;
+    }
+
+    /* Board responsiveness */
+    #board {
+        width: 100%;
+        max-width: 95vw;
+        aspect-ratio: 1/1;
+        transform: none;
+        margin: 0 auto;
+    }
+
+    .rotate-label {
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+    }
+}
+
+/* Toast Notification Styling */
+.toast {
+    background-color: #1e293b;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-left: 4px solid #3b82f6; /* Default blue accent */
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast-success { border-left-color: #22c55e; }
+.toast-error { border-left-color: #ef4444; }
+.toast-info { border-left-color: #3b82f6; }
+.toast-warning { border-left-color: #eab308; }

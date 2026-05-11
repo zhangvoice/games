@@ -1,0 +1,363 @@
+/* Gomoku Style */
+
+/* General Styles - Inherited from Tailwind mostly, but custom tweaks here */
+body {
+    background-color: #f8fafc; /* slate-50 */
+}
+
+.gomoku-wrapper {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.game-container {
+    width: 100%;
+    background: white;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+/* Score Board */
+.score-board {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    background: #f1f5f9; /* slate-100 */
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+}
+
+.player-score {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    opacity: 0.6;
+}
+
+.player-score.active {
+    background: white;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.disc-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.disc-icon.black {
+    background: #1e293b; /* slate-800 */
+}
+
+.disc-icon.white {
+    background: #f8fafc; /* slate-50 */
+    border: 1px solid #cbd5e1; /* slate-300 */
+}
+
+.player-score .info {
+    display: flex;
+    flex-direction: column;
+}
+
+.player-score .name {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #475569; /* slate-600 */
+}
+
+/* Board */
+.board-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    background: #c68c53; /* Darker wood base */
+    padding: 1.5rem; /* More padding for frame effect */
+    border-radius: 0.25rem;
+    box-shadow: 
+        0 20px 25px -5px rgb(0 0 0 / 0.3), 
+        0 8px 10px -6px rgb(0 0 0 / 0.3),
+        inset 0 0 20px rgba(0,0,0,0.2); /* Inner shadow for depth */
+    position: relative;
+}
+
+/* Wood texture effect for wrapper (frame) */
+.board-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none;
+    border-radius: 0.25rem;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    grid-template-rows: repeat(15, 1fr);
+    width: 100%;
+    aspect-ratio: 1;
+    background-color: #e3c489;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 1;
+}
+
+/* Add a subtle wood grain overlay to the board */
+.board::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='woodGrain'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.05 0.005' numOctaves='2' result='turbulence'/%3E%3CfeDisplacementMap in2='turbulence' in='SourceGraphic' scale='5' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='%23e3c489'/%3E%3Crect width='100%25' height='100%25' fill='rgba(139, 69, 19, 0.05)' filter='url(%23woodGrain)'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.cell {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Draw grid lines */
+.cell::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: #4a3c31; /* Darker ink color */
+    transform: translateY(-50%);
+    z-index: 1;
+    opacity: 0.8;
+}
+
+.cell::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background: #4a3c31;
+    transform: translateX(-50%);
+    z-index: 1;
+    opacity: 0.8;
+}
+
+/* Fix grid edges - lines should not extend to the very edge of the board area if we want it to look like a Go board */
+/* Top edge */
+.cell[data-row="0"]::after {
+    top: 50%;
+    height: 50%;
+}
+
+/* Bottom edge */
+.cell[data-row="14"]::after {
+    height: 50%;
+}
+
+/* Left edge */
+.cell[data-col="0"]::before {
+    left: 50%;
+    width: 50%;
+}
+
+/* Right edge */
+.cell[data-col="14"]::before {
+    width: 50%;
+}
+
+/* Star points (Hoshi) */
+.cell.star::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    background: #000;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+/* We need to override the ::before/::after logic for star points specifically or add a child element */
+/* A better way for star points is a separate span inside cell */
+.star-point {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background: #000;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+/* Pieces */
+.piece {
+    width: 90%; /* Slightly larger */
+    height: 90%;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 10;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 
+        2px 2px 4px rgba(0,0,0,0.4), /* Drop shadow */
+        inset -2px -2px 6px rgba(0,0,0,0.6), /* Inner shadow bottom-right (stronger) */
+        inset 2px 2px 8px rgba(255,255,255,0.7); /* Highlight top-left (stronger/larger) */
+}
+
+.cell.has-piece .piece {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.piece.black {
+    /* More definition for black stones */
+    background: radial-gradient(circle at 35% 35%, #888 0%, #1a1a1a 40%, #000 100%);
+    box-shadow: 
+        2px 2px 4px rgba(0,0,0,0.5),
+        inset -2px -2px 6px rgba(0,0,0,0.8),
+        inset 3px 3px 8px rgba(255,255,255,0.5); /* Clearer highlight on black */
+}
+
+.piece.white {
+    /* Brighter white stones */
+    background: radial-gradient(circle at 35% 35%, #fff 0%, #f0f0f0 30%, #dcdcdc 100%);
+    box-shadow: 
+        2px 2px 4px rgba(0,0,0,0.3),
+        inset -2px -2px 6px rgba(0,0,0,0.3), /* Softer inner shadow for white */
+        inset 3px 3px 10px rgba(255,255,255,1); /* Bright glow */
+}
+
+/* Last move marker */
+.piece.last-move::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30%;
+    height: 30%;
+    background: rgba(255, 0, 0, 0.8);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 4px rgba(255, 0, 0, 0.5);
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+}
+
+.btn {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    background: #1e293b; /* slate-800 */
+    color: white;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    background: #0f172a; /* slate-900 */
+    transform: translateY(-1px);
+}
+
+.btn.secondary {
+    background: #f1f5f9; /* slate-100 */
+    color: #475569; /* slate-600 */
+}
+
+.btn.secondary:hover {
+    background: #e2e8f0; /* slate-200 */
+}
+
+.status {
+    font-weight: 700;
+    color: #475569;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5); /* slate-900/50 */
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
+.modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    width: 90%;
+    max-width: 24rem;
+    transform: scale(1);
+    transition: transform 0.3s;
+}
+
+.modal-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-content {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.winner-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.winner-icon::after {
+    content: '🏆';
+}
+
+.winner-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.modal-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
